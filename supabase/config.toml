@@ -1,0 +1,75 @@
+# Supabase project configuration for Rideva.
+# Run `supabase start` to boot the full local stack (Postgres + Auth + Realtime
+# + Storage + Edge runtime), then `supabase db reset` to apply migrations + seed.
+
+project_id = "rideva"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[db.pooler]
+enabled = true
+port = 54329
+pool_mode = "transaction"
+
+[realtime]
+enabled = true
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "5MiB"
+
+[storage.buckets.avatars]
+public = true
+file_size_limit = "2MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "image/webp"]
+
+[storage.buckets.driver-documents]
+public = false
+file_size_limit = "5MiB"
+allowed_mime_types = ["image/png", "image/jpeg", "application/pdf"]
+
+[auth]
+enabled = true
+site_url = "rideva://"
+additional_redirect_urls = ["rideva://auth/callback", "exp://"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false   # set true in production
+
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_OAUTH_CLIENT_ID)"
+secret = "env(GOOGLE_OAUTH_SECRET)"
+redirect_uri = "rideva://auth/callback"
+
+[auth.external.apple]
+enabled = true
+client_id = "env(APPLE_OAUTH_CLIENT_ID)"
+secret = "env(APPLE_OAUTH_SECRET)"
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+
+[functions.dispatch-ride]
+verify_jwt = false   # invoked server-to-server with service role
+
+[functions.send-push]
+verify_jwt = false
