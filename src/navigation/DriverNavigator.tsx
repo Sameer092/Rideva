@@ -10,6 +10,7 @@ import { ActivityScreen } from "@/screens/passenger/ActivityScreen";
 import { AccountScreen } from "@/screens/shared/AccountScreen";
 import { ActiveTripScreen } from "@/screens/driver/ActiveTripScreen";
 import { RateScreen } from "@/screens/shared/RateScreen";
+import { EditProfileScreen } from "@/screens/shared/EditProfileScreen";
 
 const Tab = createBottomTabNavigator<DriverTabParamList>();
 const Stack = createNativeStackNavigator<DriverStackParamList>();
@@ -53,6 +54,7 @@ export function DriverNavigator() {
       <Stack.Screen name="Tabs" component={DriverTabs} />
       <Stack.Screen name="ActiveTrip" component={ActiveTripScreen} />
       <Stack.Screen name="Rate" component={RateScreen} options={{ presentation: "modal" }} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ presentation: "modal" }} />
     </Stack.Navigator>
   );
 }

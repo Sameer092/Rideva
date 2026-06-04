@@ -67,7 +67,13 @@
         }
       ],
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Rideva needs access to your photos so you can set a profile picture."
+        }
+      ]
     ],
     "extra": {
       "supabaseUrl": "https://YOUR_PROJECT.supabase.co",

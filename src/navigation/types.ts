@@ -22,6 +22,7 @@ export type PassengerStackParamList = {
   Rate: { rideId: string; rateeId: string };
   SavedLocations: undefined;
   LocationPicker: { field: "pickup" | "dropoff" };
+  EditProfile: undefined;
 };
 
 export type DriverTabParamList = {
@@ -35,6 +36,7 @@ export type DriverStackParamList = {
   Tabs: NavigatorScreenParams<DriverTabParamList>;
   ActiveTrip: { rideId: string };
   Rate: { rideId: string; rateeId: string };
+  EditProfile: undefined;
 };
 
 export type RootStackParamList = {

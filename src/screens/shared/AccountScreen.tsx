@@ -39,7 +39,7 @@ export function AccountScreen() {
         {/* Gradient header */}
         <LinearGradient colors={[...GRADIENTS.brand]} {...GRADIENT_DIRECTION.diagonal}>
           <SafeAreaView edges={["top"]}>
-            <View className="items-center gap-3 px-6 pb-8 pt-4">
+            <Pressable className="items-center gap-3 px-6 pb-8 pt-4" onPress={() => navigation.navigate("EditProfile")}>
               <View className="rounded-full border-4 border-white/30" style={SHADOWS.md}>
                 <Avatar name={profile?.fullName} uri={profile?.avatarUrl} size={88} />
               </View>
@@ -52,15 +52,15 @@ export function AccountScreen() {
                 <Text className="text-white/70">·</Text>
                 <Text className="font-bold capitalize text-white">{profile?.role}</Text>
               </View>
-            </View>
+            </Pressable>
           </SafeAreaView>
         </LinearGradient>
 
         <View className="-mt-5 gap-4 rounded-t-3xl bg-canvas-light dark:bg-canvas-dark px-5 pt-6">
           <Card padded={false} className="overflow-hidden py-1">
+            <Row icon="✏️" label="Edit profile" onPress={() => navigation.navigate("EditProfile")} />
             {isPassenger && <Row icon="⭐" label="Saved places" onPress={() => navigation.navigate("SavedLocations")} />}
-            <Row icon="💳" label="Payment methods" onPress={() => comingSoon("Payment methods")} />
-            <Row icon="🧾" label="Ride history" onPress={() => comingSoon("Ride history")} />
+            <Row icon="🧾" label="Ride history" onPress={() => navigation.navigate(isPassenger ? "ActivityTab" : "TripsTab")} />
             <Row icon="🛟" label="Help & support" onPress={() => comingSoon("Help & support")} />
           </Card>
 
