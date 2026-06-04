@@ -11,6 +11,7 @@ import { LoadingState } from "@/components/ui/States";
 import { useActiveRide } from "@/hooks/useActiveRide";
 import { useDriverLocationBroadcast } from "@/hooks/useDriverLocationBroadcast";
 import { rideService } from "@/services/rides";
+import { formatMoney } from "@/utils/format";
 import type { RideStatus } from "@/types";
 
 type Props = NativeStackScreenProps<DriverStackParamList, "ActiveTrip">;
@@ -18,11 +19,12 @@ type Props = NativeStackScreenProps<DriverStackParamList, "ActiveTrip">;
 const NEXT: Record<string, { label: string; status: RideStatus }> = {
   accepted: { label: "I've arrived", status: "arrived" },
   arriving: { label: "I've arrived", status: "arrived" },
-  arrived: { label: "Start trip", status: "in_progress" },
+  arrived: { label: "Start ride", status: "in_progress" },
 };
 
 export function ActiveTripScreen({ navigation }: Props) {
   const { data: ride } = useActiveRide();
+  const [busy, setBusy] = React.useState(false);
   useDriverLocationBroadcast(!!ride, ride?.id ?? null);
 
   const target = useMemo(() => {
@@ -45,15 +47,30 @@ export function ActiveTripScreen({ navigation }: Props) {
   }
 
   async function advance() {
-    const step = NEXT[ride!.status];
-    if (step) return rideService.updateRideStatus(ride!.id, step.status);
-    if (ride!.status === "in_progress") {
-      await rideService.completeRide(ride!.id, ride!.distanceM ?? 0, ride!.durationS ?? 0);
-      navigation.replace("Rate", { rideId: ride!.id, rateeId: ride!.passengerId });
+    if (busy) return;
+    setBusy(true);
+    try {
+      const step = NEXT[ride!.status];
+      if (step) {
+        await rideService.updateRideStatus(ride!.id, step.status);
+      } else if (ride!.status === "in_progress") {
+        // Settle the fare + write earnings, confirm, then rate the passenger.
+        await rideService.completeRide(ride!.id, ride!.distanceM ?? 0, ride!.durationS ?? 0);
+        const fare = ride!.fareFinal ?? ride!.offeredFare ?? 0;
+        Alert.alert(
+          "Ride complete 🎉",
+          `${formatMoney(fare, ride!.currency)} added to your earnings.`,
+          [{ text: "Rate passenger", onPress: () => navigation.replace("Rate", { rideId: ride!.id, rateeId: ride!.passengerId }) }],
+        );
+      }
+    } catch (e) {
+      Alert.alert("Couldn't complete", (e as { message?: string })?.message ?? "Please try again.");
+    } finally {
+      setBusy(false);
     }
   }
 
-  const cta = NEXT[ride.status]?.label ?? (goingToDropoff ? "Complete trip" : "Waiting…");
+  const cta = NEXT[ride.status]?.label ?? (goingToDropoff ? "Complete ride" : "Waiting…");
 
   return (
     <View className="flex-1 bg-canvas-light dark:bg-canvas-dark">
@@ -77,10 +94,10 @@ export function ActiveTripScreen({ navigation }: Props) {
         </Card>
 
         <Button label="Open navigation" variant="outline" leftIcon={<Text>🧭</Text>} onPress={openExternalNav} />
-        <Button label={cta} size="lg" onPress={advance} />
+        <Button label={cta} size="lg" loading={busy} onPress={advance} />
         {["accepted", "arriving"].includes(ride.status) && (
           <Button
-            label="Cancel trip"
+            label="Cancel ride"
             variant="ghost"
             onPress={() =>
               Alert.alert("Cancel trip?", "", [

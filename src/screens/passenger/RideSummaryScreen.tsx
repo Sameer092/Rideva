@@ -25,7 +25,7 @@ export function RideSummaryScreen({ navigation, route }: Props) {
       <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
         <View className="items-center gap-2 pt-4">
           <Text className="text-6xl">🎉</Text>
-          <Text className="text-3xl font-black text-light-text dark:text-dark-text">Trip complete</Text>
+          <Text className="text-3xl font-black text-light-text dark:text-dark-text">Ride complete</Text>
           <Text className="text-light-textMuted dark:text-dark-textMuted">Thanks for riding with Rideva</Text>
         </View>
 

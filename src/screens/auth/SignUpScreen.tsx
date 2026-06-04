@@ -85,7 +85,7 @@ export function SignUpScreen({ navigation }: Props) {
             {/* Role selector */}
             <View className="flex-row gap-3">
               {([
-                { key: "passenger", emoji: "🧍", title: "Ride", sub: "Book trips" },
+                { key: "passenger", emoji: "🧍", title: "Ride", sub: "Book rides" },
                 { key: "driver", emoji: "🚗", title: "Drive", sub: "Earn money" },
               ] as const).map((r) => {
                 const active = role === r.key;
@@ -128,6 +128,13 @@ export function SignUpScreen({ navigation }: Props) {
                     );
                   })}
                 </View>
+
+                <Controller control={control} name="vehicleName" render={({ field: { onChange, value } }) => (
+                  <Input label="Vehicle" leftIcon={<Text>🚘</Text>} placeholder="White Toyota Corolla" value={value ?? ""} onChangeText={onChange} />
+                )} />
+                <Controller control={control} name="licensePlate" render={({ field: { onChange, value } }) => (
+                  <Input label="Vehicle number (plate)" leftIcon={<Text>🔢</Text>} autoCapitalize="characters" placeholder="ABC-123" value={value ?? ""} onChangeText={onChange} />
+                )} />
               </View>
             )}
 

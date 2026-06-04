@@ -48,7 +48,7 @@ export function EarningsScreen() {
                 <View className="mt-2 flex-row gap-6">
                   <View className="items-center">
                     <Text className="text-lg font-extrabold text-white">{totals.trips}</Text>
-                    <Text className="text-xs text-white/70">Trips</Text>
+                    <Text className="text-xs text-white/70">Rides</Text>
                   </View>
                   <View className="items-center">
                     <Text className="text-lg font-extrabold text-white">{formatMoney(totals.gross, totals.currency)}</Text>
@@ -60,7 +60,7 @@ export function EarningsScreen() {
             <Text className="px-1 font-extrabold text-light-text dark:text-dark-text">Recent payouts</Text>
           </View>
         }
-        ListEmptyComponent={<EmptyState emoji="💵" title="No earnings yet" subtitle="Complete trips to start earning." />}
+        ListEmptyComponent={<EmptyState emoji="💵" title="No earnings yet" subtitle="Complete rides to start earning." />}
         renderItem={({ item }) => (
           <Card elevation="sm" className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
@@ -68,7 +68,7 @@ export function EarningsScreen() {
                 <Text>🚗</Text>
               </View>
               <View>
-                <Text className="font-extrabold text-light-text dark:text-dark-text">Trip payout</Text>
+                <Text className="font-extrabold text-light-text dark:text-dark-text">Ride payout</Text>
                 <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">{relativeTime(item.createdAt)}</Text>
               </View>
             </View>

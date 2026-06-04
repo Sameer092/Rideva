@@ -22,7 +22,7 @@ export const authService = {
     return data;
   },
 
-  async signUp({ email, password, fullName, phone, role, vehicleClass }: SignUpValues) {
+  async signUp({ email, password, fullName, phone, role, vehicleClass, licensePlate, vehicleName }: SignUpValues) {
     // role + name + vehicle type travel in user metadata; the
     // on_auth_user_created trigger reads them to provision the profile (and the
     // drivers row, with the chosen vehicle_class) server-side.
@@ -32,6 +32,8 @@ export const authService = {
         phone: phone || null,
         role: role as UserRole,
         vehicle_class: role === "driver" ? vehicleClass : null,
+        license_plate: role === "driver" ? licensePlate || null : null,
+        vehicle_make: role === "driver" ? vehicleName || null : null,
       },
       emailRedirectTo: redirectTo,
     };

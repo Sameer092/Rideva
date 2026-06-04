@@ -29,8 +29,8 @@ export function ActivityScreen() {
         keyExtractor={(r) => r.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, gap: 12 }}
-        ListHeaderComponent={<Text className="px-1 pb-1 pt-2 text-3xl font-black text-light-text dark:text-dark-text">Your trips</Text>}
-        ListEmptyComponent={<EmptyState emoji="🧾" title="No trips yet" subtitle="Your completed rides will appear here." />}
+        ListHeaderComponent={<Text className="px-1 pb-1 pt-2 text-3xl font-black text-light-text dark:text-dark-text">Your rides</Text>}
+        ListEmptyComponent={<EmptyState emoji="🧾" title="No rides yet" subtitle="Your completed rides will appear here." />}
         renderItem={({ item }) => (
           <Card elevation="sm">
             <View className="flex-row items-start gap-3">

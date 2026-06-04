@@ -60,7 +60,7 @@ export function AccountScreen() {
           <Card padded={false} className="overflow-hidden py-1">
             {isPassenger && <Row icon="⭐" label="Saved places" onPress={() => navigation.navigate("SavedLocations")} />}
             <Row icon="💳" label="Payment methods" onPress={() => comingSoon("Payment methods")} />
-            <Row icon="🧾" label="Trip history" onPress={() => comingSoon("Trip history")} />
+            <Row icon="🧾" label="Ride history" onPress={() => comingSoon("Ride history")} />
             <Row icon="🛟" label="Help & support" onPress={() => comingSoon("Help & support")} />
           </Card>
 

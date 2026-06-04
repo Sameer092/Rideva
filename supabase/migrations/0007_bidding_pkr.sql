@@ -173,7 +173,7 @@ begin
   insert into public.payments (ride_id, payer_id, method, status, currency,
     base_fare, distance_fare, time_fare, surge_amount, booking_fee, total_amount)
   values (p_ride_id, v_ride.passenger_id, v_ride.payment_method,
-    case when v_ride.payment_method = 'cash' then 'paid' else 'pending' end,
+    (case when v_ride.payment_method = 'cash' then 'paid' else 'pending' end)::payment_status,
     f.currency, f.base_fare, f.distance_fare, f.time_fare, f.surge_amount, f.booking_fee, v_total)
   returning id into v_payment_id;
 

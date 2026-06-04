@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { PassengerStackParamList, PassengerTabParamList } from "./types";
@@ -16,9 +16,10 @@ import { LocationPickerScreen } from "@/screens/passenger/LocationPickerScreen";
 const Tab = createBottomTabNavigator<PassengerTabParamList>();
 const Stack = createNativeStackNavigator<PassengerStackParamList>();
 
-function tabIcon(emoji: string) {
-  return ({ focused }: { focused: boolean }) => (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>
+/** Tab icon factory — filled when active, outline when inactive. */
+function tabIcon(filled: keyof typeof Ionicons.glyphMap, outline: keyof typeof Ionicons.glyphMap) {
+  return ({ focused, color, size }: { focused: boolean; color: string; size: number }) => (
+    <Ionicons name={focused ? filled : outline} size={size ?? 24} color={color} />
   );
 }
 
@@ -40,9 +41,9 @@ function PassengerTabs() {
         },
       }}
     >
-      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: "Home", tabBarIcon: tabIcon("🗺️") }} />
-      <Tab.Screen name="ActivityTab" component={ActivityScreen} options={{ title: "Activity", tabBarIcon: tabIcon("🧾") }} />
-      <Tab.Screen name="AccountTab" component={AccountScreen} options={{ title: "Account", tabBarIcon: tabIcon("👤") }} />
+      <Tab.Screen name="HomeTab" component={HomeScreen} options={{ title: "Home", tabBarIcon: tabIcon("map", "map-outline") }} />
+      <Tab.Screen name="ActivityTab" component={ActivityScreen} options={{ title: "Activity", tabBarIcon: tabIcon("receipt", "receipt-outline") }} />
+      <Tab.Screen name="AccountTab" component={AccountScreen} options={{ title: "Account", tabBarIcon: tabIcon("person-circle", "person-circle-outline") }} />
     </Tab.Navigator>
   );
 }

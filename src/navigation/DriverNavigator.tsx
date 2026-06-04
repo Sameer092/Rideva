@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import type { DriverStackParamList, DriverTabParamList } from "./types";
@@ -14,9 +14,10 @@ import { RateScreen } from "@/screens/shared/RateScreen";
 const Tab = createBottomTabNavigator<DriverTabParamList>();
 const Stack = createNativeStackNavigator<DriverStackParamList>();
 
-function tabIcon(emoji: string) {
-  return ({ focused }: { focused: boolean }) => (
-    <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{emoji}</Text>
+/** Tab icon factory — filled when active, outline when inactive. */
+function tabIcon(filled: keyof typeof Ionicons.glyphMap, outline: keyof typeof Ionicons.glyphMap) {
+  return ({ focused, color, size }: { focused: boolean; color: string; size: number }) => (
+    <Ionicons name={focused ? filled : outline} size={size ?? 24} color={color} />
   );
 }
 
@@ -38,10 +39,10 @@ function DriverTabs() {
         },
       }}
     >
-      <Tab.Screen name="DashboardTab" component={DriverDashboardScreen} options={{ title: "Drive", tabBarIcon: tabIcon("🚗") }} />
-      <Tab.Screen name="EarningsTab" component={EarningsScreen} options={{ title: "Earnings", tabBarIcon: tabIcon("💵") }} />
-      <Tab.Screen name="TripsTab" component={ActivityScreen} options={{ title: "Trips", tabBarIcon: tabIcon("🧾") }} />
-      <Tab.Screen name="AccountTab" component={AccountScreen} options={{ title: "Account", tabBarIcon: tabIcon("👤") }} />
+      <Tab.Screen name="DashboardTab" component={DriverDashboardScreen} options={{ title: "Drive", tabBarIcon: tabIcon("car-sport", "car-sport-outline") }} />
+      <Tab.Screen name="EarningsTab" component={EarningsScreen} options={{ title: "Earnings", tabBarIcon: tabIcon("wallet", "wallet-outline") }} />
+      <Tab.Screen name="TripsTab" component={ActivityScreen} options={{ title: "Rides", tabBarIcon: tabIcon("receipt", "receipt-outline") }} />
+      <Tab.Screen name="AccountTab" component={AccountScreen} options={{ title: "Account", tabBarIcon: tabIcon("person-circle", "person-circle-outline") }} />
     </Tab.Navigator>
   );
 }

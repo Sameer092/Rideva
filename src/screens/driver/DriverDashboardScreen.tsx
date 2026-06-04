@@ -104,7 +104,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
                         <Text numberOfLines={1} className="font-semibold text-light-text dark:text-dark-text">📍 {r.pickupAddress}</Text>
                         <Text numberOfLines={1} className="text-light-textMuted dark:text-dark-textMuted">🏁 {r.dropoffAddress}</Text>
                         <Text className="mt-1 text-xs text-light-textMuted dark:text-dark-textMuted">
-                          {formatDistance(r.pickupDistanceM)} away · trip {formatDistance(r.tripDistanceM)} · {formatEta(r.etaS)}
+                          {formatDistance(r.pickupDistanceM)} away · ride {formatDistance(r.tripDistanceM)} · {formatEta(r.etaS)}
                         </Text>
                       </View>
                       <View className="items-end">
@@ -116,7 +116,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
                     {counterFor === r.rideId ? (
                       <View className="mt-3 flex-row items-center gap-2">
                         <View className="flex-1 flex-row items-center gap-1 rounded-xl bg-surface-light dark:bg-surface-dark px-3 h-11">
-                          <Text className="font-bold text-light-text dark:text-dark-text">₨</Text>
+                          <Text className="font-bold text-light-text dark:text-dark-text">$</Text>
                           <TextInput
                             value={counterAmount}
                             onChangeText={setCounterAmount}

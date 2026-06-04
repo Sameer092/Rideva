@@ -37,7 +37,7 @@ export function RateScreen({ navigation, route }: Props) {
       <View className="flex-1 justify-center gap-7 px-6">
         <View className="items-center gap-2">
           <Text className="text-6xl">🌟</Text>
-          <Text className="text-center text-3xl font-black text-light-text dark:text-dark-text">How was your trip?</Text>
+          <Text className="text-center text-3xl font-black text-light-text dark:text-dark-text">How was your ride?</Text>
           <Text className="text-light-textMuted dark:text-dark-textMuted">Your feedback keeps Rideva great</Text>
         </View>
 

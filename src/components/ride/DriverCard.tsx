@@ -21,7 +21,7 @@ export function DriverCard({ driver, profile, etaLabel }: Props) {
           <Text className="text-base font-extrabold text-light-text dark:text-dark-text">{profile.fullName}</Text>
           <View className="flex-row items-center gap-1">
             <Text className="text-sm font-bold text-warning">★ {profile.ratingAvg.toFixed(2)}</Text>
-            <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">· {driver.totalTrips} trips</Text>
+            <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">· {driver.totalTrips} rides</Text>
           </View>
           <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">
             {driver.vehicleColor} {driver.vehicleMake} {driver.vehicleModel}

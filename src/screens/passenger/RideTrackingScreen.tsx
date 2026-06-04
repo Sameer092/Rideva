@@ -118,9 +118,18 @@ export function RideTrackingScreen({ navigation }: Props) {
                       <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">
                         ★ {b.rating.toFixed(1)} · {formatDistance(b.distanceM)} · {formatEta(b.etaS)}
                       </Text>
-                      <Text className="text-xs text-light-textMuted dark:text-dark-textMuted" numberOfLines={1}>
-                        {[b.vehicleColor, b.vehicleMake, b.vehicleModel].filter(Boolean).join(" ") || "Vehicle"}
-                      </Text>
+                      <View className="mt-0.5 flex-row items-center gap-2">
+                        <Text className="text-xs text-light-textMuted dark:text-dark-textMuted" numberOfLines={1}>
+                          {[b.vehicleColor, b.vehicleMake, b.vehicleModel].filter(Boolean).join(" ") || "Vehicle"}
+                        </Text>
+                        {b.licensePlate && (
+                          <View className="rounded-md border border-light-border dark:border-dark-border px-1.5 py-0.5">
+                            <Text className="text-[11px] font-black tracking-widest text-light-text dark:text-dark-text">
+                              {b.licensePlate}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
                     </View>
                     <View className="items-end gap-1">
                       <Text className="text-lg font-black text-light-text dark:text-dark-text">{formatMoney(b.bidAmount, ride.currency)}</Text>
