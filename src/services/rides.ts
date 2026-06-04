@@ -76,14 +76,18 @@ export const rideService = {
       .single();
     if (error) throw error;
 
-    // Fire the dispatcher (server-to-server matching). Non-blocking for the UI.
-    void supabase.functions.invoke("dispatch-ride", { body: { ride_id: data.id } });
+    // Kick off matching via the client-callable RPC (no edge function needed).
+    // .then(noop, noop) keeps it non-blocking without an unhandled rejection.
+    supabase.rpc("request_dispatch", { p_ride_id: data.id }).then(
+      () => {},
+      () => {},
+    );
     return mapRide(data);
   },
 
   /** Re-trigger a dispatch wave (auto-reassign / radius expansion). */
   async pokeDispatch(rideId: string) {
-    await supabase.functions.invoke("dispatch-ride", { body: { ride_id: rideId } });
+    await supabase.rpc("request_dispatch", { p_ride_id: rideId });
   },
 
   async getRide(rideId: string): Promise<Ride> {

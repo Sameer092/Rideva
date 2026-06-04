@@ -8,10 +8,10 @@ import { RatingStars } from "@/components/ui/RatingStars";
 import { rideService } from "@/services/rides";
 import { useAuthStore } from "@/store/authStore";
 
-// Reused by both stacks; params shape is identical.
 type Props = NativeStackScreenProps<PassengerStackParamList, "Rate">;
 
-/** Rate the trip counterparty (1–5 stars + optional comment). */
+const LABELS = ["", "Poor", "Okay", "Good", "Great", "Excellent"];
+
 export function RateScreen({ navigation, route }: Props) {
   const { rideId, rateeId } = route.params;
   const raterId = useAuthStore((s) => s.session?.user.id);
@@ -34,23 +34,31 @@ export function RateScreen({ navigation, route }: Props) {
 
   return (
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
-      <View className="flex-1 justify-center gap-6 p-6">
-        <Text className="text-center text-2xl font-extrabold text-light-text dark:text-dark-text">
-          How was your trip?
-        </Text>
-        <View className="items-center">
-          <RatingStars value={score} onChange={setScore} size={40} />
+      <View className="flex-1 justify-center gap-7 px-6">
+        <View className="items-center gap-2">
+          <Text className="text-6xl">🌟</Text>
+          <Text className="text-center text-3xl font-black text-light-text dark:text-dark-text">How was your trip?</Text>
+          <Text className="text-light-textMuted dark:text-dark-textMuted">Your feedback keeps Rideva great</Text>
         </View>
+
+        <View className="items-center gap-3">
+          <RatingStars value={score} onChange={setScore} size={44} />
+          <Text className="text-lg font-extrabold text-brand">{LABELS[score]}</Text>
+        </View>
+
         <TextInput
-          placeholder="Leave a comment (optional)"
-          placeholderTextColor="#9CA3AF"
+          placeholder="Add a comment (optional)"
+          placeholderTextColor="#9AA0AD"
           multiline
           value={comment}
           onChangeText={setComment}
-          className="min-h-24 rounded-2xl border border-light-border dark:border-dark-border p-4 text-light-text dark:text-dark-text"
+          className="min-h-28 rounded-2xl bg-light-border/40 dark:bg-elevated-dark p-4 text-base text-light-text dark:text-dark-text"
         />
-        <Button label="Submit" loading={loading} onPress={submit} />
-        <Button label="Skip" variant="ghost" onPress={() => navigation.popToTop()} />
+
+        <View className="gap-2">
+          <Button label="Submit rating" size="lg" loading={loading} onPress={submit} />
+          <Button label="Skip for now" variant="ghost" onPress={() => navigation.popToTop()} />
+        </View>
       </View>
     </SafeAreaView>
   );

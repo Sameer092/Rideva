@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { VEHICLE_CLASSES } from "@/constants";
 import { formatMoney } from "@/utils/format";
 import type { VehicleClass, FareBreakdown } from "@/types";
@@ -7,18 +7,17 @@ import type { VehicleClass, FareBreakdown } from "@/types";
 interface Props {
   selected: VehicleClass;
   onSelect: (vc: VehicleClass) => void;
-  /** Per-class fare estimates keyed by class, if computed. */
   fares?: Partial<Record<VehicleClass, FareBreakdown>>;
 }
 
-/** Horizontal selector of vehicle tiers with live fare per option. */
+/**
+ * Vertical list of vehicle tiers — each a full-width row with icon, name,
+ * capacity/ETA and live fare. The selected row is highlighted with a brand
+ * tint + ring, matching the Uber/Bolt ride-picker pattern.
+ */
 export function VehicleClassSelector({ selected, onSelect, fares }: Props) {
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ gap: 12, paddingHorizontal: 4 }}
-    >
+    <View className="gap-2.5">
       {VEHICLE_CLASSES.map((vc) => {
         const active = vc.key === selected;
         const fare = fares?.[vc.key];
@@ -28,23 +27,27 @@ export function VehicleClassSelector({ selected, onSelect, fares }: Props) {
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
             onPress={() => onSelect(vc.key)}
-            className={`w-32 rounded-2xl border p-3 ${
+            className={`flex-row items-center gap-3 rounded-2xl border-2 p-3 ${
               active
-                ? "border-brand bg-brand-50 dark:bg-brand-700"
-                : "border-light-border dark:border-dark-border bg-surface-light dark:bg-surface-dark"
+                ? "border-brand bg-brand-50 dark:bg-brand-700/25"
+                : "border-transparent bg-light-border/40 dark:bg-elevated-dark"
             }`}
           >
-            <Text className="text-2xl">{vc.icon}</Text>
-            <Text className="mt-1 font-bold text-light-text dark:text-dark-text">{vc.label}</Text>
-            <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">
-              {vc.seats} seats · {vc.eta}
-            </Text>
-            <Text className="mt-1 font-semibold text-brand">
+            <View className={`h-12 w-12 items-center justify-center rounded-2xl ${active ? "bg-brand" : "bg-surface-light dark:bg-surface-dark"}`}>
+              <Text className="text-2xl">{vc.icon}</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-extrabold text-light-text dark:text-dark-text">{vc.label}</Text>
+              <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">
+                {vc.seats} seats · {vc.eta} away
+              </Text>
+            </View>
+            <Text className="text-lg font-extrabold text-light-text dark:text-dark-text">
               {fare ? formatMoney(fare.totalAmount, fare.currency) : "—"}
             </Text>
           </Pressable>
         );
       })}
-    </ScrollView>
+    </View>
   );
 }

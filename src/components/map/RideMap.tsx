@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo } from "react";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE, type Region } from "react-native-maps";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import { useTheme } from "@/hooks/useTheme";
 import { DEFAULT_REGION } from "@/constants";
 import type { LatLng } from "@/types";
@@ -34,7 +34,9 @@ export const RideMap = forwardRef<MapView, RideMapProps>(function RideMap(
   return (
     <MapView
       ref={ref}
-      provider={PROVIDER_GOOGLE}
+      // iOS uses Apple Maps (no API key needed). Android uses Google Maps,
+      // which needs the key in app.json → android.config.googleMaps.apiKey.
+      provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
       style={{ flex: 1 }}
       initialRegion={region ?? DEFAULT_REGION}
       customMapStyle={customMapStyle}

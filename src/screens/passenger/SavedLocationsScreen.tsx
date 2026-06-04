@@ -8,7 +8,8 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState, LoadingState } from "@/components/ui/States";
 import { qk } from "@/lib/queryClient";
 
-/** Manage saved/favourite places (home, work, custom). */
+const ICONS: Record<string, string> = { home: "🏠", work: "💼" };
+
 export function SavedLocationsScreen() {
   const { data, isLoading } = useQuery({
     queryKey: qk.savedLocations,
@@ -29,9 +30,14 @@ export function SavedLocationsScreen() {
         contentContainerStyle={{ padding: 16, gap: 12 }}
         ListEmptyComponent={<EmptyState emoji="⭐" title="No saved places" subtitle="Save home and work for faster booking." />}
         renderItem={({ item }) => (
-          <Card>
-            <Text className="font-semibold text-light-text dark:text-dark-text">{item.label}</Text>
-            <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">{item.address}</Text>
+          <Card elevation="sm" className="flex-row items-center gap-3">
+            <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-700/25">
+              <Text className="text-lg">{ICONS[item.label.toLowerCase()] ?? "📍"}</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="font-extrabold text-light-text dark:text-dark-text">{item.label}</Text>
+              <Text className="text-sm text-light-textMuted dark:text-dark-textMuted" numberOfLines={1}>{item.address}</Text>
+            </View>
           </Card>
         )}
       />

@@ -15,8 +15,9 @@ module.exports = function (api) {
           extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
         },
       ],
-      // Reanimated plugin MUST be listed last.
-      "react-native-reanimated/plugin",
+      // NOTE: the react-native-reanimated/plugin is added automatically by the
+      // "nativewind/babel" preset (via react-native-css-interop), so we do NOT
+      // list it here — adding it twice triggers a "duplicate plugin" error.
     ],
   };
 };

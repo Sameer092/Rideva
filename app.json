@@ -13,7 +13,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#0B0B0F"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.rideva.app",
@@ -21,7 +23,10 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Rideva uses your location to find nearby drivers and track your ride.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Drivers share live location during active trips so passengers can track arrival.",
-        "UIBackgroundModes": ["location", "remote-notification"]
+        "UIBackgroundModes": [
+          "location",
+          "remote-notification"
+        ]
       },
       "config": {
         "googleMapsApiKey": "GOOGLE_MAPS_IOS_KEY"
@@ -60,15 +65,13 @@
           "icon": "./assets/notification-icon.png",
           "color": "#5B5BD6"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "supabaseUrl": "https://YOUR_PROJECT.supabase.co",
       "supabaseAnonKey": "YOUR_ANON_KEY",
-      "googleOauthClientId": "YOUR_GOOGLE_WEB_CLIENT_ID",
-      "eas": {
-        "projectId": "00000000-0000-0000-0000-000000000000"
-      }
+      "googleOauthClientId": "YOUR_GOOGLE_WEB_CLIENT_ID"
     }
   }
 }

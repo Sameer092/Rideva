@@ -6,36 +6,52 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Brand
+        // Brand — vivid, modern violet. Readable as text AND as a fill.
         brand: {
-          DEFAULT: "#5B5BD6",
-          50: "#EEEEFB",
-          100: "#D9D9F5",
-          400: "#7C7CE0",
-          500: "#5B5BD6",
-          600: "#4A4ABF",
-          700: "#3B3B99",
+          DEFAULT: "#6D5EF6",
+          50: "#F1EFFF",
+          100: "#E4E0FF",
+          200: "#CCC5FB",
+          400: "#8E82F8",
+          500: "#6D5EF6",
+          600: "#5A4BE6",
+          700: "#4536C9",
         },
-        // Semantic surfaces (light + dark resolved via the `dark:` variant)
+        // Theme-aware surfaces (resolved via the `dark:` variant)
+        canvas: {
+          light: "#F5F6F8",
+          dark: "#0A0B0F",
+        },
         surface: {
           light: "#FFFFFF",
-          dark: "#15151B",
+          dark: "#15171D",
         },
-        canvas: {
-          light: "#F5F5F8",
-          dark: "#0B0B0F",
+        elevated: {
+          light: "#FFFFFF",
+          dark: "#1C1F26",
         },
-        success: "#16A34A",
-        warning: "#D97706",
-        danger: "#DC2626",
-      },
-      fontFamily: {
-        sans: ["System"],
+        light: {
+          text: "#0B0D12",
+          textMuted: "#737886",
+          border: "#ECEEF1",
+        },
+        dark: {
+          text: "#F5F6F8",
+          textMuted: "#9AA0AD",
+          border: "#23262E",
+        },
+        success: "#10B981",
+        warning: "#F59E0B",
+        danger: "#EF4444",
       },
       borderRadius: {
         xl: "16px",
-        "2xl": "24px",
-        "3xl": "32px",
+        "2xl": "20px",
+        "3xl": "28px",
+        "4xl": "36px",
+      },
+      fontFamily: {
+        sans: ["System"],
       },
     },
   },

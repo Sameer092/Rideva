@@ -10,7 +10,11 @@ import { authService } from "@/services/auth";
  *   2. Subscribe to auth state changes (sign in/out, token refresh).
  *   3. Load the profile whenever the session's user changes (drives RBAC).
  *
- * Components read state from `useAuthStore`; they don't call this hook.
+ * IMPORTANT: we must NOT call other Supabase methods *synchronously inside* the
+ * onAuthStateChange callback — the auth client holds a lock during the callback
+ * and a nested query (our profile fetch) would deadlock, leaving the app stuck
+ * on the auth screen. We therefore defer the profile load with setTimeout(0),
+ * which runs it after the lock is released. (Documented Supabase caveat.)
  */
 export function useAuthBootstrap() {
   const { setSession, setProfile, setInitializing } = useAuthStore();
@@ -18,32 +22,42 @@ export function useAuthBootstrap() {
   useEffect(() => {
     let mounted = true;
 
+    // Fetch the profile, retrying briefly to absorb the tiny race between the
+    // auth signup completing and the DB trigger inserting the profile row.
     async function loadProfileFor(userId: string | undefined) {
       if (!userId) {
-        setProfile(null);
+        if (mounted) setProfile(null);
         return;
       }
-      try {
-        const profile = await authService.fetchProfile(userId);
-        if (mounted) setProfile(profile);
-      } catch {
-        if (mounted) setProfile(null);
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const profile = await authService.fetchProfile(userId);
+          if (mounted) setProfile(profile);
+          return;
+        } catch {
+          await new Promise((r) => setTimeout(r, 350));
+        }
       }
+      if (mounted) setProfile(null);
     }
 
-    // 1. Restore persisted session.
-    supabase.auth.getSession().then(async ({ data }) => {
+    // 1. Restore persisted session on launch.
+    supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
       setSession(data.session);
-      await loadProfileFor(data.session?.user.id);
-      setInitializing(false);
+      void loadProfileFor(data.session?.user.id).finally(() => {
+        if (mounted) setInitializing(false);
+      });
     });
 
-    // 2. React to subsequent auth changes.
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    // 2. React to subsequent auth changes (sign in / out / token refresh).
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return;
       setSession(session);
-      await loadProfileFor(session?.user.id);
+      // Defer the DB call out of the auth-lock callback to avoid a deadlock.
+      setTimeout(() => {
+        if (mounted) void loadProfileFor(session?.user.id);
+      }, 0);
     });
 
     return () => {

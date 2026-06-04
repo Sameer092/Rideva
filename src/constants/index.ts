@@ -5,24 +5,24 @@
  */
 
 export const COLORS = {
-  brand: "#5B5BD6",
-  brandDark: "#4A4ABF",
-  success: "#16A34A",
-  warning: "#D97706",
-  danger: "#DC2626",
+  brand: "#6D5EF6",
+  brandDark: "#5A4BE6",
+  success: "#10B981",
+  warning: "#F59E0B",
+  danger: "#EF4444",
   light: {
-    canvas: "#F5F5F8",
+    canvas: "#F5F6F8",
     surface: "#FFFFFF",
-    text: "#0B0B0F",
-    textMuted: "#6B7280",
-    border: "#E5E7EB",
+    text: "#0B0D12",
+    textMuted: "#737886",
+    border: "#ECEEF1",
   },
   dark: {
-    canvas: "#0B0B0F",
-    surface: "#15151B",
-    text: "#F5F5F8",
-    textMuted: "#9CA3AF",
-    border: "#27272F",
+    canvas: "#0A0B0F",
+    surface: "#15171D",
+    text: "#F5F6F8",
+    textMuted: "#9AA0AD",
+    border: "#23262E",
   },
 } as const;
 

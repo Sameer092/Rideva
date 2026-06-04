@@ -1,38 +1,58 @@
-import React, { forwardRef } from "react";
-import { View, Text, TextInput, type TextInputProps } from "react-native";
+import React, { forwardRef, useState } from "react";
+import { View, Text, TextInput, Pressable, type TextInputProps } from "react-native";
 
 interface InputProps extends TextInputProps {
   label?: string;
   error?: string;
   leftIcon?: React.ReactNode;
+  rightSlot?: React.ReactNode;
 }
 
-/** Labeled text input with inline validation error, wired for RHF/Controller. */
+/**
+ * Labeled text input with a focus ring, inline validation error and optional
+ * icon / right slot. Wired for react-hook-form Controller. Rounded-2xl filled
+ * field that subtly highlights its border on focus.
+ */
 export const Input = forwardRef<TextInput, InputProps>(function Input(
-  { label, error, leftIcon, ...rest },
+  { label, error, leftIcon, rightSlot, onFocus, onBlur, ...rest },
   ref,
 ) {
+  const [focused, setFocused] = useState(false);
+
+  const borderClass = error
+    ? "border-danger"
+    : focused
+      ? "border-brand"
+      : "border-transparent";
+
   return (
-    <View className="w-full gap-1.5">
+    <View className="w-full gap-2">
       {label && (
-        <Text className="text-sm font-medium text-light-textMuted dark:text-dark-textMuted">
+        <Text className="ml-1 text-sm font-semibold text-light-textMuted dark:text-dark-textMuted">
           {label}
         </Text>
       )}
       <View
-        className={`flex-row items-center gap-2 rounded-2xl border px-4 py-3.5 bg-surface-light dark:bg-surface-dark ${
-          error ? "border-danger" : "border-light-border dark:border-dark-border"
-        }`}
+        className={`flex-row items-center gap-3 rounded-2xl border-2 px-4 h-[56px] bg-light-border/40 dark:bg-elevated-dark ${borderClass}`}
       >
         {leftIcon}
         <TextInput
           ref={ref}
-          placeholderTextColor="#9CA3AF"
-          className="flex-1 text-base text-light-text dark:text-dark-text"
+          placeholderTextColor="#9AA0AD"
+          className="flex-1 text-base font-medium text-light-text dark:text-dark-text"
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
           {...rest}
         />
+        {rightSlot}
       </View>
-      {error && <Text className="text-xs text-danger">{error}</Text>}
+      {error && <Text className="ml-1 text-xs font-medium text-danger">{error}</Text>}
     </View>
   );
 });

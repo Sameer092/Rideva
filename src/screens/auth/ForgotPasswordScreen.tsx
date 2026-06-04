@@ -7,6 +7,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/utils/validation";
 import { authService } from "@/services/auth";
 
@@ -34,16 +35,23 @@ export function ForgotPasswordScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
-      <View className="flex-1 justify-center gap-5 p-6">
-        <Text className="text-3xl font-extrabold text-light-text dark:text-dark-text">Reset password</Text>
-        <Text className="text-light-textMuted dark:text-dark-textMuted">
-          Enter your email and we'll send you a reset link.
-        </Text>
+      <View className="px-5 pt-2">
+        <ScreenHeader onBack={() => navigation.goBack()} />
+      </View>
+      <View className="flex-1 justify-center gap-6 px-6">
+        <View className="h-16 w-16 items-center justify-center rounded-3xl bg-brand-50 dark:bg-brand-700/25">
+          <Text className="text-3xl">🔑</Text>
+        </View>
+        <View className="gap-2">
+          <Text className="text-4xl font-black text-light-text dark:text-dark-text">Reset password</Text>
+          <Text className="text-base text-light-textMuted dark:text-dark-textMuted">
+            Enter your email and we'll send you a secure reset link.
+          </Text>
+        </View>
         <Controller control={control} name="email" render={({ field: { onChange, value } }) => (
-          <Input label="Email" autoCapitalize="none" keyboardType="email-address" value={value} onChangeText={onChange} error={errors.email?.message} />
+          <Input label="Email" leftIcon={<Text>✉️</Text>} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" value={value} onChangeText={onChange} error={errors.email?.message} />
         )} />
-        <Button label="Send reset link" loading={loading} onPress={handleSubmit(onSubmit)} />
-        <Button label="Back to sign in" variant="ghost" onPress={() => navigation.goBack()} />
+        <Button label="Send reset link" size="lg" loading={loading} onPress={handleSubmit(onSubmit)} />
       </View>
     </SafeAreaView>
   );

@@ -21,19 +21,14 @@ import { useRideStore } from "@/store/rideStore";
 
 type Props = NativeStackScreenProps<PassengerStackParamList, "RideTracking">;
 
-/**
- * Live ride tracking. Shows the driver moving toward pickup/destination in
- * real time. The ride row is kept live via Realtime (useActiveRide), and the
- * driver's GPS via useDriverTracking. While still matching, we poll the
- * dispatcher to widen the search / reassign on rejection.
- */
-export function RideTrackingScreen({ navigation, route }: Props) {
+const STAGES = ["matching", "accepted", "arrived", "in_progress"];
+
+export function RideTrackingScreen({ navigation }: Props) {
   const mapRef = useRef<MapView>(null);
   const { data: ride } = useActiveRide();
   const { location: driverLoc, heading } = useDriverTracking(ride?.id);
   const resetBooking = useRideStore((s) => s.resetBooking);
 
-  // Driver profile + vehicle (only once assigned).
   const { data: driverBundle } = useQuery({
     queryKey: ["driver-bundle", ride?.driverId],
     enabled: !!ride?.driverId,
@@ -46,14 +41,12 @@ export function RideTrackingScreen({ navigation, route }: Props) {
     },
   });
 
-  // While matching, nudge the dispatcher to run the next wave.
   useEffect(() => {
     if (!ride || !["requested", "matching"].includes(ride.status)) return;
     const t = setInterval(() => void rideService.pokeDispatch(ride.id), RIDE.dispatchPollMs);
     return () => clearInterval(t);
   }, [ride]);
 
-  // Navigate to summary/rating on terminal states.
   useEffect(() => {
     if (!ride) return;
     if (ride.status === "completed") {
@@ -70,45 +63,52 @@ export function RideTrackingScreen({ navigation, route }: Props) {
 
   const copy = RIDE_STATUS_COPY[ride.status] ?? { title: ride.status, subtitle: "" };
   const matching = ["requested", "matching"].includes(ride.status);
+  const stageIndex = Math.max(0, STAGES.indexOf(ride.status === "arriving" ? "accepted" : ride.status));
 
-  async function handleCancel() {
+  function handleCancel() {
     Alert.alert("Cancel ride?", "Are you sure you want to cancel?", [
-      { text: "No", style: "cancel" },
-      {
-        text: "Yes, cancel",
-        style: "destructive",
-        onPress: async () => {
-          await rideService.cancelRide(ride!.id, "passenger");
-        },
-      },
+      { text: "Keep ride", style: "cancel" },
+      { text: "Yes, cancel", style: "destructive", onPress: () => rideService.cancelRide(ride!.id, "passenger") },
     ]);
   }
 
   return (
     <View className="flex-1 bg-canvas-light dark:bg-canvas-dark">
-      <RideMap
-        ref={mapRef}
-        pickup={ride.pickup.point}
-        dropoff={ride.dropoff.point}
-        driver={driverLoc}
-        driverHeading={heading}
-      />
+      <RideMap ref={mapRef} pickup={ride.pickup.point} dropoff={ride.dropoff.point} driver={driverLoc} driverHeading={heading} />
 
       <SafeAreaView edges={["bottom"]} className="absolute inset-x-0 bottom-0 gap-3 p-4">
         <Card>
-          <Text className="text-xl font-extrabold text-light-text dark:text-dark-text">{copy.title}</Text>
-          <Text className="text-light-textMuted dark:text-dark-textMuted">{copy.subtitle}</Text>
+          {/* progress stepper */}
+          <View className="mb-4 flex-row gap-1.5">
+            {STAGES.map((_, i) => (
+              <View
+                key={i}
+                className={`h-1.5 flex-1 rounded-full ${i <= stageIndex ? "bg-brand" : "bg-light-border dark:bg-dark-border"}`}
+              />
+            ))}
+          </View>
+          <View className="flex-row items-center gap-3">
+            {matching && (
+              <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-700/25">
+                <Text className="text-lg">🔎</Text>
+              </View>
+            )}
+            <View className="flex-1">
+              <Text className="text-xl font-black text-light-text dark:text-dark-text">{copy.title}</Text>
+              <Text className="text-light-textMuted dark:text-dark-textMuted">{copy.subtitle}</Text>
+            </View>
+          </View>
         </Card>
 
         {driverBundle && !matching && (
           <DriverCard
             driver={driverBundle.driver}
             profile={driverBundle.profile}
-            etaLabel={ride.status === "accepted" || ride.status === "arriving" ? "Driver is on the way" : undefined}
+            etaLabel={["accepted", "arriving"].includes(ride.status) ? "Your driver is on the way" : undefined}
           />
         )}
 
-        {(matching || ride.status === "accepted" || ride.status === "arriving") && (
+        {(matching || ["accepted", "arriving"].includes(ride.status)) && (
           <Button label="Cancel ride" variant="danger" onPress={handleCancel} />
         )}
       </SafeAreaView>

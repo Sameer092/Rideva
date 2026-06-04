@@ -26,8 +26,16 @@ function DriverTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#5B5BD6",
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+        tabBarActiveTintColor: "#6D5EF6",
+        tabBarInactiveTintColor: colors.textMuted,
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          height: 86,
+          paddingTop: 8,
+          paddingBottom: 28,
+        },
       }}
     >
       <Tab.Screen name="DashboardTab" component={DriverDashboardScreen} options={{ title: "Drive", tabBarIcon: tabIcon("🚗") }} />
