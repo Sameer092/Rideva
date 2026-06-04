@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, Platform } from "react-native";
+import { View, Text, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Button } from "@/components/ui/Button";
+import { GoogleLogo, AppleLogo } from "@/components/ui/BrandLogos";
 import { authService } from "@/services/auth";
 import { GRADIENTS, GRADIENT_DIRECTION } from "@/theme";
 
@@ -35,23 +36,23 @@ export function WelcomeScreen({ navigation }: Props) {
               <Button label="Continue with email" onPress={() => navigation.navigate("SignIn")} size="lg" />
 
               <View className="flex-row gap-3">
-                <View className="flex-1">
-                  <Button
-                    label="Google"
-                    variant="secondary"
-                    leftIcon={<Text className="text-base">G</Text>}
-                    onPress={() => authService.signInWithGoogle().catch(() => {})}
-                  />
-                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Continue with Google"
+                  onPress={() => authService.signInWithGoogle().catch(() => {})}
+                  className="h-[54px] flex-1 items-center justify-center rounded-full bg-white active:opacity-80"
+                >
+                  <GoogleLogo size={26} />
+                </Pressable>
                 {Platform.OS === "ios" && (
-                  <View className="flex-1">
-                    <Button
-                      label="Apple"
-                      variant="secondary"
-                      leftIcon={<Text className="text-base"></Text>}
-                      onPress={() => authService.signInWithApple().catch(() => {})}
-                    />
-                  </View>
+                  <Pressable
+                    accessibilityRole="button"
+                    accessibilityLabel="Continue with Apple"
+                    onPress={() => authService.signInWithApple().catch(() => {})}
+                    className="h-[54px] flex-1 items-center justify-center rounded-full bg-white active:opacity-80"
+                  >
+                    <AppleLogo size={26} color="#000" />
+                  </Pressable>
                 )}
               </View>
 

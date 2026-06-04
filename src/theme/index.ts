@@ -24,13 +24,21 @@ export const SHADOWS: Record<string, ViewStyle> = {
     shadowOffset: { width: 0, height: 8 },
     elevation: 6,
   },
-  // Prominent CTA / hero element
+  // Prominent floating element (cards/sheets) — neutral, not a colored glow.
   lg: {
-    shadowColor: "#4536C9",
-    shadowOpacity: 0.28,
-    shadowRadius: 24,
-    shadowOffset: { width: 0, height: 12 },
-    elevation: 12,
+    shadowColor: "#0B0D12",
+    shadowOpacity: 0.16,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 8,
+  },
+  // Tight, subtle lift for the primary button (no blurry halo).
+  button: {
+    shadowColor: "#0B0D12",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
 };
 

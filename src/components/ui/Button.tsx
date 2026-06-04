@@ -16,16 +16,18 @@ interface ButtonProps extends Omit<PressableProps, "children"> {
   fullWidth?: boolean;
 }
 
-const sizes: Record<Size, { container: string; text: string }> = {
-  sm: { container: "px-4 h-11", text: "text-sm font-bold" },
-  md: { container: "px-5 h-[54px]", text: "text-base font-bold" },
-  lg: { container: "px-6 h-[60px]", text: "text-lg font-extrabold" },
+// Explicit numeric heights (set via `style`, not Tailwind arbitrary classes) so
+// they apply reliably — including to the LinearGradient used by the primary
+// variant, which NativeWind won't size via `h-[..]`.
+const sizes: Record<Size, { height: number; paddingHorizontal: number; text: string }> = {
+  sm: { height: 46, paddingHorizontal: 16, text: "text-sm font-bold" },
+  md: { height: 54, paddingHorizontal: 20, text: "text-base font-bold" },
+  lg: { height: 58, paddingHorizontal: 24, text: "text-lg font-extrabold" },
 };
 
 /**
- * Primary action button. The `primary` variant renders a violet gradient with
- * a soft brand-coloured glow; other variants are flat/tinted. All variants are
- * fully-rounded "pills" with generous touch targets — the modern ride-app look.
+ * Primary action button — a fully-rounded pill. The `primary` variant is a
+ * violet gradient with a subtle lift; other variants are flat/tinted.
  */
 export function Button({
   label,
@@ -42,23 +44,20 @@ export function Button({
   const isDisabled = disabled || loading;
   const width = fullWidth ? "w-full" : "self-start";
 
+  const textColor =
+    variant === "primary" || variant === "danger"
+      ? "text-white"
+      : variant === "ghost"
+        ? "text-brand"
+        : "text-light-text dark:text-dark-text";
+
   const content = (
     <View className="flex-row items-center justify-center gap-2">
       {leftIcon}
       {loading ? (
         <ActivityIndicator color={variant === "primary" || variant === "danger" ? "#fff" : "#6D5EF6"} />
       ) : (
-        <Text
-          className={`${s.text} ${
-            variant === "primary" || variant === "danger"
-              ? "text-white"
-              : variant === "ghost"
-                ? "text-brand"
-                : "text-light-text dark:text-dark-text"
-          }`}
-        >
-          {label}
-        </Text>
+        <Text className={`${s.text} ${textColor}`}>{label}</Text>
       )}
       {rightIcon}
     </View>
@@ -71,14 +70,19 @@ export function Button({
         accessibilityLabel={label}
         disabled={isDisabled}
         className={`${width} rounded-full active:opacity-90`}
-        style={!isDisabled ? SHADOWS.lg : undefined}
+        style={!isDisabled ? SHADOWS.button : undefined}
         {...rest}
       >
         <LinearGradient
           colors={isDisabled ? ["#9AA0AD", "#9AA0AD"] : [...GRADIENTS.brand]}
           {...GRADIENT_DIRECTION.diagonal}
-          style={{ borderRadius: 999 }}
-          className={`items-center justify-center rounded-full ${s.container}`}
+          style={{
+            height: s.height,
+            paddingHorizontal: s.paddingHorizontal,
+            borderRadius: 999,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
           {content}
         </LinearGradient>
@@ -98,8 +102,11 @@ export function Button({
       accessibilityRole="button"
       accessibilityLabel={label}
       disabled={isDisabled}
-      className={`${width} flex-row items-center justify-center rounded-full active:opacity-80 disabled:opacity-40 ${s.container} ${variantClass[variant as Exclude<Variant, "primary">]}`}
-      style={variant === "danger" && !isDisabled ? SHADOWS.sm : undefined}
+      className={`${width} flex-row items-center justify-center rounded-full active:opacity-80 disabled:opacity-40 ${variantClass[variant as Exclude<Variant, "primary">]}`}
+      style={[
+        { height: s.height, paddingHorizontal: s.paddingHorizontal },
+        variant === "danger" && !isDisabled ? SHADOWS.button : undefined,
+      ]}
       {...rest}
     >
       {content}

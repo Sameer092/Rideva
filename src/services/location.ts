@@ -26,21 +26,61 @@ export const locationService = {
     return { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
   },
 
-  /** Reverse-geocode a coordinate to a human address line. */
+  /**
+   * Reverse-geocode a coordinate to a human address using Nominatim (free, no
+   * API key). Falls back to the on-device geocoder, then to raw coordinates.
+   */
   async reverseGeocode(point: LatLng): Promise<string> {
-    const [result] = await Location.reverseGeocodeAsync({
-      latitude: point.latitude,
-      longitude: point.longitude,
-    });
-    if (!result) return `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`;
-    return [result.name, result.street, result.city].filter(Boolean).join(", ");
+    try {
+      // accept-language=en forces English (OSM defaults to the local language).
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${point.latitude}&lon=${point.longitude}&zoom=18&addressdetails=1&accept-language=en`;
+      const res = await fetch(url, { headers: { "User-Agent": "Rideva/1.0 (demo app)", Accept: "application/json" } });
+      if (res.ok) {
+        const data = await res.json();
+        const a = data.address ?? {};
+        const line = [a.road ?? a.neighbourhood ?? a.suburb, a.city ?? a.town ?? a.village, a.country]
+          .filter(Boolean)
+          .join(", ");
+        if (line) return line;
+        if (data.display_name) return data.display_name as string;
+      }
+    } catch {
+      /* fall through */
+    }
+    return `${point.latitude.toFixed(5)}, ${point.longitude.toFixed(5)}`;
   },
 
-  /** Forward-geocode a search string to coordinates. */
+  /**
+   * Forward-geocode a search string to coordinates + label using Nominatim.
+   * Returns up to `limit` suggestions.
+   */
+  async search(query: string, limit = 5, near?: LatLng | null): Promise<Array<{ label: string; point: LatLng }>> {
+    try {
+      let url =
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}` +
+        `&limit=${limit}&addressdetails=1&accept-language=en`;
+      // Bias results toward the user's area so nearby places rank first.
+      if (near) {
+        const d = 0.6; // ~60km box around the user
+        const vb = `${near.longitude - d},${near.latitude + d},${near.longitude + d},${near.latitude - d}`;
+        url += `&viewbox=${vb}&bounded=0`;
+      }
+      const res = await fetch(url, { headers: { "User-Agent": "Rideva/1.0 (demo app)", Accept: "application/json" } });
+      if (!res.ok) return [];
+      const data = (await res.json()) as Array<{ display_name: string; lat: string; lon: string }>;
+      return data.map((d) => ({
+        label: d.display_name,
+        point: { latitude: parseFloat(d.lat), longitude: parseFloat(d.lon) },
+      }));
+    } catch {
+      return [];
+    }
+  },
+
+  /** Convenience: first match for a query. */
   async geocode(query: string): Promise<LatLng | null> {
-    const [result] = await Location.geocodeAsync(query);
-    if (!result) return null;
-    return { latitude: result.latitude, longitude: result.longitude };
+    const [first] = await this.search(query, 1);
+    return first?.point ?? null;
   },
 
   /** Push a single driver location ping via the RPC. */

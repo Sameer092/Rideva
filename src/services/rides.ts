@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
-import { mapRide, mapOffer, mapEarning } from "./mappers";
-import { toGeoJSON } from "@/utils/geo";
+import { mapRide, mapEarning } from "./mappers";
+import { toEWKT } from "@/utils/geo";
 import type {
   FareBreakdown,
   Place,
@@ -8,6 +8,10 @@ import type {
   Ride,
   RideStatus,
   VehicleClass,
+  DriverBid,
+  NearbyRequest,
+  NearbyDriver,
+  LatLng,
 } from "@/types";
 
 /**
@@ -44,7 +48,10 @@ export const rideService = {
     };
   },
 
-  /** Create a ride request, then kick off dispatch. Returns the new ride. */
+  /**
+   * Create a ride request with the passenger's OFFERED fare (inDrive bidding).
+   * Nearby drivers then bid; the passenger accepts one. Returns the new ride.
+   */
   async createRide(args: {
     passengerId: string;
     pickup: Place;
@@ -52,7 +59,7 @@ export const rideService = {
     vehicleClass: VehicleClass;
     distanceM: number;
     durationS: number;
-    fareEstimate: number;
+    offeredFare: number;
     paymentMethod: PaymentMethod;
     routePolyline?: string;
   }): Promise<Ride> {
@@ -61,13 +68,14 @@ export const rideService = {
       .insert({
         passenger_id: args.passengerId,
         pickup_address: args.pickup.address,
-        pickup_point: toGeoJSON(args.pickup.point),
+        pickup_point: toEWKT(args.pickup.point),
         dropoff_address: args.dropoff.address,
-        dropoff_point: toGeoJSON(args.dropoff.point),
+        dropoff_point: toEWKT(args.dropoff.point),
         vehicle_class: args.vehicleClass,
         distance_m: args.distanceM,
         duration_s: args.durationS,
-        fare_estimate: args.fareEstimate,
+        fare_estimate: args.offeredFare,
+        offered_fare: args.offeredFare,
         payment_method: args.paymentMethod,
         route_polyline: args.routePolyline ?? null,
         status: "requested",
@@ -75,19 +83,7 @@ export const rideService = {
       .select("*")
       .single();
     if (error) throw error;
-
-    // Kick off matching via the client-callable RPC (no edge function needed).
-    // .then(noop, noop) keeps it non-blocking without an unhandled rejection.
-    supabase.rpc("request_dispatch", { p_ride_id: data.id }).then(
-      () => {},
-      () => {},
-    );
     return mapRide(data);
-  },
-
-  /** Re-trigger a dispatch wave (auto-reassign / radius expansion). */
-  async pokeDispatch(rideId: string) {
-    await supabase.rpc("request_dispatch", { p_ride_id: rideId });
   },
 
   async getRide(rideId: string): Promise<Ride> {
@@ -137,34 +133,81 @@ export const rideService = {
     if (error) throw error;
   },
 
-  // --- Driver-side -----------------------------------------------------------
+  // --- inDrive bidding: passenger side --------------------------------------
 
-  /** Incoming offers for the current driver (pending, not expired). */
-  async getIncomingOffers(driverId: string) {
-    const { data, error } = await supabase
-      .from("ride_offers")
-      .select("*, rides(*)")
-      .eq("driver_id", driverId)
-      .eq("status", "pending")
-      .gt("expires_at", new Date().toISOString())
-      .order("offered_at", { ascending: false });
+  /** Live list of driver bids on a ride (enriched with driver info). */
+  async getRideBids(rideId: string): Promise<DriverBid[]> {
+    const { data, error } = await supabase.rpc("ride_bids", { p_ride: rideId });
     if (error) throw error;
-    return (data ?? []).map((row) => ({ offer: mapOffer(row), ride: mapRide(row.rides) }));
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    return (data ?? []).map((r: any) => ({
+      offerId: r.offer_id,
+      driverId: r.driver_id,
+      bidAmount: r.bid_amount,
+      distanceM: r.distance_m,
+      etaS: r.eta_s,
+      driverName: r.driver_name,
+      rating: Number(r.rating),
+      totalTrips: r.total_trips,
+      vehicleMake: r.vehicle_make,
+      vehicleModel: r.vehicle_model,
+      vehicleColor: r.vehicle_color,
+      licensePlate: r.license_plate,
+    }));
   },
 
-  /** Atomic accept — returns true if this driver won the ride. */
-  async acceptOffer(offerId: string): Promise<boolean> {
-    const { data, error } = await supabase.rpc("accept_ride_offer", { p_offer_id: offerId });
+  /** Passenger accepts a specific driver's bid → that driver is assigned. */
+  async acceptBid(offerId: string): Promise<boolean> {
+    const { data, error } = await supabase.rpc("accept_bid", { p_offer: offerId });
     if (error) throw error;
     return data === true;
   },
 
-  async rejectOffer(offerId: string) {
-    const { error } = await supabase
-      .from("ride_offers")
-      .update({ status: "rejected", responded_at: new Date().toISOString() })
-      .eq("id", offerId);
+  // --- inDrive bidding: driver side -----------------------------------------
+
+  /** Nearby open ride requests for the current driver (the bidding feed). */
+  async nearbyRequests(): Promise<NearbyRequest[]> {
+    const { data, error } = await supabase.rpc("nearby_open_rides", { p_radius_m: 12000 });
     if (error) throw error;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    return (data ?? []).map((r: any) => ({
+      rideId: r.ride_id,
+      pickupAddress: r.pickup_address,
+      dropoffAddress: r.dropoff_address,
+      offeredFare: r.offered_fare,
+      currency: r.currency,
+      tripDistanceM: r.trip_distance_m,
+      tripDurationS: r.trip_duration_s,
+      pickupDistanceM: r.pickup_distance_m,
+      etaS: r.eta_s,
+      vehicleClass: r.vehicle_class,
+      requestedAt: r.requested_at,
+    }));
+  },
+
+  /** Driver submits (or updates) a bid: accept-at-offer or a counter price. */
+  async submitBid(rideId: string, amount: number): Promise<void> {
+    const { error } = await supabase.rpc("submit_bid", { p_ride: rideId, p_amount: amount });
+    if (error) throw error;
+  },
+
+  /** Nearby online drivers of a class, for the passenger's map. */
+  async nearbyDrivers(point: LatLng, vehicleClass: VehicleClass): Promise<NearbyDriver[]> {
+    const { data, error } = await supabase.rpc("nearby_drivers", {
+      p_lng: point.longitude,
+      p_lat: point.latitude,
+      p_class: vehicleClass,
+      p_radius_m: 6000,
+    });
+    if (error) throw error;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    return (data ?? []).map((r: any) => ({
+      driverId: r.driver_id,
+      lat: r.lat,
+      lng: r.lng,
+      vehicleClass: r.vehicle_class,
+      heading: r.heading != null ? Number(r.heading) : null,
+    }));
   },
 
   /** Driver advances the trip state machine (arriving/arrived/in_progress). */

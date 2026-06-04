@@ -51,11 +51,16 @@ export const RIDE = {
 } as const;
 
 export const VEHICLE_CLASSES = [
-  { key: "economy", label: "Economy", seats: 4, eta: "2 min", icon: "🚗" },
+  { key: "motorcycle", label: "Bike", seats: 1, eta: "1 min", icon: "🏍️" },
+  { key: "rickshaw", label: "Rickshaw", seats: 3, eta: "2 min", icon: "🛺" },
+  { key: "economy", label: "Economy", seats: 4, eta: "3 min", icon: "🚗" },
   { key: "comfort", label: "Comfort", seats: 4, eta: "4 min", icon: "🚙" },
   { key: "xl", label: "XL", seats: 6, eta: "5 min", icon: "🚐" },
   { key: "premium", label: "Premium", seats: 4, eta: "6 min", icon: "🏎️" },
 ] as const;
+
+/** Default currency for the app. */
+export const CURRENCY = "USD";
 
 /** Human-readable copy for each ride status shown in the UI. */
 export const RIDE_STATUS_COPY: Record<string, { title: string; subtitle: string }> = {

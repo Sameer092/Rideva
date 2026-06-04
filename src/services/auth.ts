@@ -22,19 +22,41 @@ export const authService = {
     return data;
   },
 
-  async signUp({ email, password, fullName, phone, role }: SignUpValues) {
-    // role + name travel in user metadata; the on_auth_user_created trigger
-    // reads them to provision the profile (and drivers row) server-side.
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName, phone: phone || null, role: role as UserRole },
-        emailRedirectTo: redirectTo,
+  async signUp({ email, password, fullName, phone, role, vehicleClass }: SignUpValues) {
+    // role + name + vehicle type travel in user metadata; the
+    // on_auth_user_created trigger reads them to provision the profile (and the
+    // drivers row, with the chosen vehicle_class) server-side.
+    const options = {
+      data: {
+        full_name: fullName,
+        phone: phone || null,
+        role: role as UserRole,
+        vehicle_class: role === "driver" ? vehicleClass : null,
       },
-    });
-    if (error) throw error;
-    return data;
+      emailRedirectTo: redirectTo,
+    };
+
+    // Mobile networks flap — retry transient "Network request failed" errors.
+    // If a previous attempt actually created the account (its response was
+    // lost), the retry returns "already registered"; recover by signing in.
+    let lastErr: unknown;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { data, error } = await supabase.auth.signUp({ email, password, options });
+        if (error) throw error;
+        return data;
+      } catch (e) {
+        lastErr = e;
+        const msg = String((e as { message?: string })?.message ?? "");
+        if (/already registered|already exists/i.test(msg)) {
+          // Account exists (likely created on a lost-response attempt) → sign in.
+          return await this.signIn({ email, password });
+        }
+        if (!/network request failed|network error|fetch/i.test(msg)) throw e;
+        await new Promise((r) => setTimeout(r, 700)); // back off, then retry
+      }
+    }
+    throw lastErr;
   },
 
   async signOut() {
@@ -93,6 +115,24 @@ export const authService = {
       .single();
     if (error) throw error;
     return mapProfile(data);
+  },
+
+  /**
+   * Fetch the profile, retrying briefly. Right after signup there is a tiny
+   * window before the `on_auth_user_created` trigger commits the profile row;
+   * the retry absorbs that race so the first load doesn't fail.
+   */
+  async fetchProfileWithRetry(userId: string, attempts = 5): Promise<Profile> {
+    let lastErr: unknown;
+    for (let i = 0; i < attempts; i++) {
+      try {
+        return await this.fetchProfile(userId);
+      } catch (e) {
+        lastErr = e;
+        await new Promise((r) => setTimeout(r, 350));
+      }
+    }
+    throw lastErr;
   },
 
   async updatePushToken(userId: string, token: string) {

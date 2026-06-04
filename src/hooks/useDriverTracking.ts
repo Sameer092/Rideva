@@ -3,6 +3,9 @@ import { supabase } from "@/services/supabase";
 import { toLatLng } from "@/utils/geo";
 import type { LatLng } from "@/types";
 
+// Unique channel topics per subscription (see useActiveRide for why).
+let channelSeq = 0;
+
 /**
  * Passenger-side live driver tracking. Subscribes to inserts on
  * `driver_locations` scoped to the active ride and exposes the latest point +
@@ -32,7 +35,7 @@ export function useDriverTracking(rideId: string | null | undefined) {
       });
 
     const channel = supabase
-      .channel(`track:${rideId}`)
+      .channel(`track:${rideId}:${channelSeq++}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "driver_locations", filter: `ride_id=eq.${rideId}` },

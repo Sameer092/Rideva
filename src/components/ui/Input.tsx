@@ -23,7 +23,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     ? "border-danger"
     : focused
       ? "border-brand"
-      : "border-transparent";
+      : "border-light-border dark:border-dark-border";
 
   return (
     <View className="w-full gap-2">
@@ -33,13 +33,16 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
         </Text>
       )}
       <View
-        className={`flex-row items-center gap-3 rounded-2xl border-2 px-4 h-[56px] bg-light-border/40 dark:bg-elevated-dark ${borderClass}`}
+        className={`flex-row items-center gap-3 rounded-2xl border-2 px-4 py-3.5 bg-light-border/40 dark:bg-elevated-dark ${borderClass}`}
       >
         {leftIcon}
         <TextInput
           ref={ref}
           placeholderTextColor="#9AA0AD"
-          className="flex-1 text-base font-medium text-light-text dark:text-dark-text"
+          // paddingVertical:0 removes RN's default vertical padding so the text
+          // isn't clipped; the row's py-3.5 controls the field height instead.
+          style={{ paddingVertical: 0, fontSize: 16, lineHeight: 20 }}
+          className="flex-1 font-medium text-light-text dark:text-dark-text"
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);

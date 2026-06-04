@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Switch, Alert } from "react-native";
+import { View, Text, Switch, Alert, ScrollView, Pressable, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import type { CompositeScreenProps } from "@react-navigation/native";
@@ -10,12 +10,13 @@ import type { DriverStackParamList, DriverTabParamList } from "@/navigation/type
 import { RideMap } from "@/components/map/RideMap";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useIncomingOffers } from "@/hooks/useIncomingOffers";
+import { useNearbyRequests } from "@/hooks/useNearbyRequests";
 import { useActiveRide } from "@/hooks/useActiveRide";
 import { useDriverLocationBroadcast } from "@/hooks/useDriverLocationBroadcast";
 import { rideService } from "@/services/rides";
 import { formatDistance, formatMoney, formatEta } from "@/utils/format";
 import { SHADOWS } from "@/theme";
+import type { NearbyRequest } from "@/types";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<DriverTabParamList, "DashboardTab">,
@@ -24,9 +25,11 @@ type Props = CompositeScreenProps<
 
 export function DriverDashboardScreen({ navigation }: Props) {
   const [online, setOnline] = useState(false);
-  const { data: offers } = useIncomingOffers();
   const { data: activeRide } = useActiveRide();
+  const { data: requests } = useNearbyRequests(online && !activeRide);
   const queryClient = useQueryClient();
+  const [counterFor, setCounterFor] = useState<string | null>(null);
+  const [counterAmount, setCounterAmount] = useState("");
 
   useDriverLocationBroadcast(online || !!activeRide, activeRide?.id ?? null);
 
@@ -42,29 +45,26 @@ export function DriverDashboardScreen({ navigation }: Props) {
       await rideService.setDriverStatus(next ? "online" : "offline");
     } catch (e) {
       setOnline(!next);
-      Alert.alert("Error", e instanceof Error ? e.message : "Could not update status");
+      Alert.alert("Error", (e as { message?: string })?.message ?? "Could not update status");
     }
   }
 
-  async function accept(offerId: string) {
+  async function bid(ride: NearbyRequest, amount: number) {
     try {
-      const won = await rideService.acceptOffer(offerId);
-      if (!won) {
-        Alert.alert("Too late", "That ride was taken by another driver.");
-        void queryClient.invalidateQueries();
-      }
+      await rideService.submitBid(ride.rideId, amount);
+      setCounterFor(null);
+      setCounterAmount("");
+      Alert.alert("Offer sent", "We'll notify you if the passenger accepts.");
+      void queryClient.invalidateQueries({ queryKey: ["nearby_requests"] });
     } catch (e) {
-      Alert.alert("Error", e instanceof Error ? e.message : "Could not accept ride");
+      Alert.alert("Error", (e as { message?: string })?.message ?? "Could not send offer");
     }
   }
-
-  const topOffer = offers?.[0];
 
   return (
     <View className="flex-1 bg-canvas-light dark:bg-canvas-dark">
-      <RideMap showsUserLocation />
+      <RideMap />
 
-      {/* Online status banner */}
       <SafeAreaView edges={["top"]} className="absolute inset-x-0 top-0 px-4">
         <Card className="flex-row items-center justify-between" elevation="lg">
           <View className="flex-row items-center gap-3">
@@ -74,7 +74,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
                 {online ? "You're online" : "You're offline"}
               </Text>
               <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">
-                {online ? "Listening for ride requests" : "Go online to start earning"}
+                {online ? "Browse requests and send offers" : "Go online to see ride requests"}
               </Text>
             </View>
           </View>
@@ -82,52 +82,76 @@ export function DriverDashboardScreen({ navigation }: Props) {
         </Card>
       </SafeAreaView>
 
-      {/* Idle hint */}
-      {online && !topOffer && (
-        <View className="absolute inset-x-0 bottom-10 items-center">
-          <View className="flex-row items-center gap-2 rounded-full bg-surface-light dark:bg-surface-dark px-5 py-3" style={SHADOWS.md}>
-            <Text className="text-base">📡</Text>
-            <Text className="font-bold text-light-text dark:text-dark-text">Searching for ride requests…</Text>
-          </View>
-        </View>
-      )}
-
-      {/* Incoming offer */}
-      {topOffer && (
-        <SafeAreaView edges={["bottom"]} className="absolute inset-x-0 bottom-0 p-4">
-          <Card elevation="lg">
-            <View className="mb-3 flex-row items-center justify-between">
-              <Text className="text-xl font-black text-light-text dark:text-dark-text">New ride request</Text>
-              <Text className="text-2xl font-black text-brand">
-                {formatMoney(topOffer.ride.fareEstimate ?? 0, topOffer.ride.currency)}
-              </Text>
-            </View>
-
-            <View className="rounded-2xl bg-light-border/40 dark:bg-elevated-dark p-1">
-              <View className="flex-row items-center gap-3 px-3 py-3">
-                <View className="h-2.5 w-2.5 rounded-full bg-brand" />
-                <Text numberOfLines={1} className="flex-1 font-semibold text-light-text dark:text-dark-text">{topOffer.ride.pickup.address}</Text>
-              </View>
-              <View className="ml-[18px] h-3 w-0.5 bg-light-border dark:bg-dark-border" />
-              <View className="flex-row items-center gap-3 px-3 py-3">
-                <View className="h-2.5 w-2.5 rounded-sm bg-light-text dark:bg-white" />
-                <Text numberOfLines={1} className="flex-1 font-semibold text-light-text dark:text-dark-text">{topOffer.ride.dropoff.address}</Text>
-              </View>
-            </View>
-
-            <Text className="mt-3 text-center text-sm text-light-textMuted dark:text-dark-textMuted">
-              {formatDistance(topOffer.offer.distanceM)} away · {formatEta(topOffer.offer.etaS)}
+      {online && (
+        <SafeAreaView edges={["bottom"]} className="absolute inset-x-0 bottom-0" style={{ maxHeight: "62%" }}>
+          <View className="m-4 rounded-3xl bg-surface-light dark:bg-surface-dark p-4" style={SHADOWS.lg}>
+            <Text className="mb-2 text-lg font-black text-light-text dark:text-dark-text">
+              Nearby requests {requests?.length ? `(${requests.length})` : ""}
             </Text>
+            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+              {(requests ?? []).length === 0 ? (
+                <View className="items-center gap-2 py-8">
+                  <Text className="text-3xl">📡</Text>
+                  <Text className="text-center text-light-textMuted dark:text-dark-textMuted">
+                    Waiting for ride requests near you…
+                  </Text>
+                </View>
+              ) : (
+                (requests ?? []).map((r) => (
+                  <View key={r.rideId} className="mb-3 rounded-2xl bg-light-border/40 dark:bg-elevated-dark p-3">
+                    <View className="flex-row items-start justify-between">
+                      <View className="flex-1 pr-2">
+                        <Text numberOfLines={1} className="font-semibold text-light-text dark:text-dark-text">📍 {r.pickupAddress}</Text>
+                        <Text numberOfLines={1} className="text-light-textMuted dark:text-dark-textMuted">🏁 {r.dropoffAddress}</Text>
+                        <Text className="mt-1 text-xs text-light-textMuted dark:text-dark-textMuted">
+                          {formatDistance(r.pickupDistanceM)} away · trip {formatDistance(r.tripDistanceM)} · {formatEta(r.etaS)}
+                        </Text>
+                      </View>
+                      <View className="items-end">
+                        <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">Offer</Text>
+                        <Text className="text-xl font-black text-brand">{formatMoney(r.offeredFare ?? 0, r.currency)}</Text>
+                      </View>
+                    </View>
 
-            <View className="mt-4 flex-row gap-3">
-              <View className="flex-1">
-                <Button label="Decline" variant="outline" onPress={() => rideService.rejectOffer(topOffer.offer.id)} />
-              </View>
-              <View className="flex-[1.6]">
-                <Button label="Accept ride" onPress={() => accept(topOffer.offer.id)} />
-              </View>
-            </View>
-          </Card>
+                    {counterFor === r.rideId ? (
+                      <View className="mt-3 flex-row items-center gap-2">
+                        <View className="flex-1 flex-row items-center gap-1 rounded-xl bg-surface-light dark:bg-surface-dark px-3 h-11">
+                          <Text className="font-bold text-light-text dark:text-dark-text">₨</Text>
+                          <TextInput
+                            value={counterAmount}
+                            onChangeText={setCounterAmount}
+                            keyboardType="number-pad"
+                            placeholder={String(Math.round((r.offeredFare ?? 0) / 100))}
+                            placeholderTextColor="#9AA0AD"
+                            style={{ paddingVertical: 0, fontSize: 16 }}
+                            className="flex-1 text-light-text dark:text-dark-text"
+                          />
+                        </View>
+                        <Button
+                          label="Send"
+                          size="sm"
+                          fullWidth={false}
+                          onPress={() => {
+                            const rupees = parseInt(counterAmount || "0", 10);
+                            if (rupees > 0) void bid(r, rupees * 100);
+                          }}
+                        />
+                      </View>
+                    ) : (
+                      <View className="mt-3 flex-row gap-2">
+                        <View className="flex-1">
+                          <Button label="Counter" variant="outline" size="sm" onPress={() => { setCounterFor(r.rideId); setCounterAmount(""); }} />
+                        </View>
+                        <View className="flex-[1.4]">
+                          <Button label={`Accept ${formatMoney(r.offeredFare ?? 0, r.currency)}`} size="sm" onPress={() => void bid(r, r.offeredFare ?? 0)} />
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                ))
+              )}
+            </ScrollView>
+          </View>
         </SafeAreaView>
       )}
     </View>

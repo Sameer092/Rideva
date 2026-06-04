@@ -1,28 +1,33 @@
 import Constants from "expo-constants";
 
 /**
- * Centralised, validated access to runtime configuration.
+ * Centralised, validated runtime configuration.
  *
- * Values come from `EXPO_PUBLIC_*` env vars (inlined at build time) with a
- * fallback to the `extra` block in app.json. Reading them through this module
- * means the rest of the app never touches `process.env` or `Constants`
- * directly and we fail fast at startup if something critical is missing.
+ * IMPORTANT: Expo/Metro only inlines `process.env.EXPO_PUBLIC_*` when it is
+ * accessed *statically* (i.e. `process.env.EXPO_PUBLIC_SUPABASE_URL`). A
+ * dynamic lookup like `process.env[key]` is NOT replaced at build time and
+ * resolves to `undefined` on device — which previously caused the app to fall
+ * back to the placeholder URL and fail every request. So we read each variable
+ * by its literal name here, with an app.json `extra` fallback.
  */
-const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string>;
+const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string | undefined>;
 
-function read(key: string, fallback?: string): string {
-  const value = process.env[key] ?? fallback;
-  if (!value) {
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? extra.supabaseUrl;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? extra.supabaseAnonKey;
+const googleOauthClientId = process.env.EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? extra.googleOauthClientId ?? "";
+
+function required(value: string | undefined, name: string): string {
+  if (!value || value.includes("YOUR_") ) {
     throw new Error(
-      `[env] Missing required configuration "${key}". ` +
-        `Set it in your .env file or app.json "extra" block.`,
+      `[env] Missing/placeholder config for "${name}". ` +
+        `Set EXPO_PUBLIC_${name} in your .env file and restart with: npx expo start -c`,
     );
   }
   return value;
 }
 
 export const env = {
-  supabaseUrl: read("EXPO_PUBLIC_SUPABASE_URL", extra.supabaseUrl),
-  supabaseAnonKey: read("EXPO_PUBLIC_SUPABASE_ANON_KEY", extra.supabaseAnonKey),
-  googleOauthClientId: process.env.EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? extra.googleOauthClientId ?? "",
+  supabaseUrl: required(supabaseUrl, "SUPABASE_URL"),
+  supabaseAnonKey: required(supabaseAnonKey, "SUPABASE_ANON_KEY"),
+  googleOauthClientId,
 } as const;

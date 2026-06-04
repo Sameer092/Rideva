@@ -1,5 +1,5 @@
 import type { Driver, Profile, Ride, RideOffer, SavedLocation, AppNotification, Earning } from "@/types";
-import { toLatLng, type GeoJSONPoint } from "@/utils/geo";
+import { toLatLng } from "@/utils/geo";
 
 /**
  * Pure functions translating snake_case DB rows (as returned by PostgREST,
@@ -35,7 +35,7 @@ export function mapDriver(row: any): Driver {
     vehicleColor: row.vehicle_color,
     licensePlate: row.license_plate,
     isVerified: row.is_verified,
-    currentLocation: toLatLng(row.current_location as GeoJSONPoint),
+    currentLocation: toLatLng(row.current_location),
     heading: row.heading != null ? Number(row.heading) : null,
     totalTrips: row.total_trips ?? 0,
   };
@@ -55,6 +55,7 @@ export function mapRide(row: any): Ride {
     routePolyline: row.route_polyline,
     currency: row.currency,
     fareEstimate: row.fare_estimate,
+    offeredFare: row.offered_fare ?? null,
     fareFinal: row.fare_final,
     surgeMultiplier: Number(row.surge_multiplier ?? 1),
     paymentMethod: row.payment_method,

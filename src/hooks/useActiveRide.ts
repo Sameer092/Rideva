@@ -7,6 +7,12 @@ import { qk } from "@/lib/queryClient";
 import { useAuthStore } from "@/store/authStore";
 import type { Ride } from "@/types";
 
+// Monotonic counter so each subscription gets a UNIQUE channel topic. Supabase
+// caches channels by topic; reusing a topic across two mounted components (e.g.
+// Home + RideTracking both using this hook) makes the 2nd `.on()` run after the
+// 1st `.subscribe()` and throws "cannot add postgres_changes callbacks…".
+let channelSeq = 0;
+
 /**
  * Subscribes to the caller's active ride and keeps it live via Supabase
  * Realtime. The initial fetch comes from React Query; every Postgres change to
@@ -21,6 +27,9 @@ export function useActiveRide() {
     queryKey: qk.activeRide,
     queryFn: () => rideService.getActiveRide(userId!),
     enabled: !!userId,
+    // Poll as a safety net: a driver has no active-ride subscription until they
+    // ARE assigned, so polling lets them detect an accepted bid within seconds.
+    refetchInterval: 5000,
   });
 
   const rideId = query.data?.id;
@@ -28,7 +37,7 @@ export function useActiveRide() {
   useEffect(() => {
     if (!rideId) return;
     const channel = supabase
-      .channel(`ride:${rideId}`)
+      .channel(`ride:${rideId}:${channelSeq++}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "rides", filter: `id=eq.${rideId}` },

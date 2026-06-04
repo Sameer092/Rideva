@@ -7,15 +7,47 @@ import { env } from "@/config/env";
 /**
  * SecureStore-backed storage adapter for the Supabase auth session.
  *
- * Supabase persists the session as a single JSON blob. SecureStore values are
- * capped at ~2KB on some platforms, but auth tokens fit comfortably. We use
- * the device keychain/keystore so refresh tokens never sit in plain
- * AsyncStorage.
+ * Supabase persists the whole session (access token + refresh token + user) as
+ * a single JSON blob that exceeds SecureStore's ~2KB recommended limit. To
+ * store it reliably (and silence the size warning) we transparently split large
+ * values into <2KB chunks keyed `<key>__<i>` with a small manifest at `<key>`.
+ * Tokens stay in the device keychain/keystore — never plain storage.
  */
+const CHUNK_SIZE = 2000;
+const MANIFEST = "__chunks__:";
+
 const SecureStoreAdapter = {
-  getItem: (key: string) => SecureStore.getItemAsync(key),
-  setItem: (key: string, value: string) => SecureStore.setItemAsync(key, value),
-  removeItem: (key: string) => SecureStore.deleteItemAsync(key),
+  async getItem(key: string): Promise<string | null> {
+    const head = await SecureStore.getItemAsync(key);
+    if (head == null || !head.startsWith(MANIFEST)) return head; // plain value
+    const count = parseInt(head.slice(MANIFEST.length), 10);
+    let out = "";
+    for (let i = 0; i < count; i++) {
+      const part = await SecureStore.getItemAsync(`${key}__${i}`);
+      if (part == null) return null;
+      out += part;
+    }
+    return out;
+  },
+  async setItem(key: string, value: string): Promise<void> {
+    if (value.length <= CHUNK_SIZE) {
+      await SecureStore.setItemAsync(key, value);
+      return;
+    }
+    const count = Math.ceil(value.length / CHUNK_SIZE);
+    for (let i = 0; i < count; i++) {
+      await SecureStore.setItemAsync(`${key}__${i}`, value.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE));
+    }
+    await SecureStore.setItemAsync(key, `${MANIFEST}${count}`);
+  },
+  async removeItem(key: string): Promise<void> {
+    const head = await SecureStore.getItemAsync(key);
+    if (head?.startsWith(MANIFEST)) {
+      const count = parseInt(head.slice(MANIFEST.length), 10);
+      for (let i = 0; i < count; i++) await SecureStore.deleteItemAsync(`${key}__${i}`);
+    }
+    await SecureStore.deleteItemAsync(key);
+  },
 };
 
 export const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {

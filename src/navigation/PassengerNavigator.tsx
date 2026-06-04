@@ -11,6 +11,7 @@ import { RideTrackingScreen } from "@/screens/passenger/RideTrackingScreen";
 import { RideSummaryScreen } from "@/screens/passenger/RideSummaryScreen";
 import { RateScreen } from "@/screens/shared/RateScreen";
 import { SavedLocationsScreen } from "@/screens/passenger/SavedLocationsScreen";
+import { LocationPickerScreen } from "@/screens/passenger/LocationPickerScreen";
 
 const Tab = createBottomTabNavigator<PassengerTabParamList>();
 const Stack = createNativeStackNavigator<PassengerStackParamList>();
@@ -54,6 +55,7 @@ export function PassengerNavigator() {
       <Stack.Screen name="RideSummary" component={RideSummaryScreen} options={{ presentation: "modal" }} />
       <Stack.Screen name="Rate" component={RateScreen} options={{ presentation: "modal" }} />
       <Stack.Screen name="SavedLocations" component={SavedLocationsScreen} options={{ headerShown: true, title: "Saved places" }} />
+      <Stack.Screen name="LocationPicker" component={LocationPickerScreen} options={{ presentation: "fullScreenModal" }} />
     </Stack.Navigator>
   );
 }

@@ -30,13 +30,16 @@ export function useBooking() {
       const distanceM = Math.round(haversineMeters(pickup.point, dropoff.point) * 1.3); // road factor
       const durationS = Math.round((distanceM / 8.33)); // ~30km/h urban average
 
-      const entries = await Promise.all(
+      // allSettled so a class without a pricing row (e.g. before 0007 is run)
+      // doesn't blank out the prices for every other class.
+      const settled = await Promise.allSettled(
         VEHICLE_CLASSES.map(async (vc) => {
           const fare = await rideService.estimateFare(vc.key, distanceM, durationS);
           return [vc.key, fare] as const;
         }),
       );
-      const next = Object.fromEntries(entries) as Record<VehicleClass, FareBreakdown>;
+      const next = {} as Record<VehicleClass, FareBreakdown>;
+      for (const r of settled) if (r.status === "fulfilled") next[r.value[0]] = r.value[1];
       setFares(next);
 
       const selected = next[vehicleClass];
@@ -48,11 +51,10 @@ export function useBooking() {
   }, [pickup, dropoff, vehicleClass, setEstimate]);
 
   const book = useMutation({
-    mutationFn: async (paymentMethod: PaymentMethod) => {
+    mutationFn: async ({ paymentMethod, offeredFare }: { paymentMethod: PaymentMethod; offeredFare: number }) => {
       if (!passengerId || !pickup || !dropoff) throw new Error("Missing booking details");
       const distanceM = Math.round(haversineMeters(pickup.point, dropoff.point) * 1.3);
       const durationS = Math.round(distanceM / 8.33);
-      const fare = fares[vehicleClass] ?? (await rideService.estimateFare(vehicleClass, distanceM, durationS));
 
       const ride = await rideService.createRide({
         passengerId,
@@ -61,7 +63,7 @@ export function useBooking() {
         vehicleClass,
         distanceM,
         durationS,
-        fareEstimate: fare.totalAmount,
+        offeredFare,
         paymentMethod,
       });
       setActiveRideId(ride.id);

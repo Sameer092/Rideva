@@ -21,6 +21,7 @@ export type PassengerStackParamList = {
   RideSummary: { rideId: string };
   Rate: { rideId: string; rateeId: string };
   SavedLocations: undefined;
+  LocationPicker: { field: "pickup" | "dropoff" };
 };
 
 export type DriverTabParamList = {

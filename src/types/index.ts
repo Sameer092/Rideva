@@ -7,7 +7,7 @@
 export type UserRole = "passenger" | "driver" | "admin";
 export type AccountStatus = "active" | "suspended" | "banned" | "pending";
 export type DriverStatus = "offline" | "online" | "on_trip";
-export type VehicleClass = "economy" | "comfort" | "xl" | "premium";
+export type VehicleClass = "motorcycle" | "rickshaw" | "economy" | "comfort" | "xl" | "premium";
 export type PaymentMethod = "cash" | "card" | "wallet";
 export type PaymentStatus = "pending" | "authorized" | "paid" | "failed" | "refunded";
 
@@ -84,6 +84,7 @@ export interface Ride {
   routePolyline: string | null;
   currency: string;
   fareEstimate: number | null;
+  offeredFare: number | null;
   fareFinal: number | null;
   surgeMultiplier: number;
   paymentMethod: PaymentMethod;
@@ -127,6 +128,46 @@ export interface AppNotification {
   data: Record<string, unknown>;
   readAt: string | null;
   createdAt: string;
+}
+
+/** A driver's bid on a ride, enriched with driver info (passenger view). */
+export interface DriverBid {
+  offerId: string;
+  driverId: string;
+  bidAmount: number;
+  distanceM: number | null;
+  etaS: number | null;
+  driverName: string;
+  rating: number;
+  totalTrips: number;
+  vehicleMake: string | null;
+  vehicleModel: string | null;
+  vehicleColor: string | null;
+  licensePlate: string | null;
+}
+
+/** A nearby online driver shown on the passenger's map. */
+export interface NearbyDriver {
+  driverId: string;
+  lat: number;
+  lng: number;
+  vehicleClass: VehicleClass;
+  heading: number | null;
+}
+
+/** An open ride request shown in the driver's feed. */
+export interface NearbyRequest {
+  rideId: string;
+  pickupAddress: string;
+  dropoffAddress: string;
+  offeredFare: number | null;
+  currency: string;
+  tripDistanceM: number | null;
+  tripDurationS: number | null;
+  pickupDistanceM: number | null;
+  etaS: number | null;
+  vehicleClass: VehicleClass;
+  requestedAt: string;
 }
 
 export interface Earning {

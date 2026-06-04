@@ -27,6 +27,7 @@ export const signUpSchema = z
       .or(z.literal("")),
     password: passwordSchema,
     role: z.enum(["passenger", "driver"]).default("passenger"),
+    vehicleClass: z.enum(["motorcycle", "rickshaw", "economy", "comfort", "xl", "premium"]).default("economy"),
   });
 export type SignUpValues = z.infer<typeof signUpSchema>;
 

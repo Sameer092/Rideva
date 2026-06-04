@@ -13,15 +13,50 @@ export interface GeoJSONPoint {
   coordinates: [number, number]; // [lng, lat]
 }
 
-export function toLatLng(geo: GeoJSONPoint | null | undefined): LatLng | null {
-  if (!geo?.coordinates) return null;
-  const [longitude, latitude] = geo.coordinates;
-  return { latitude, longitude };
+/**
+ * Decode whatever PostgREST returns for a geography column into {lat,lng}.
+ * Supabase returns PostGIS geography as **WKB hex** (e.g. "0101000020E6100000…")
+ * by default, but we also accept GeoJSON in case a view/cast returns it.
+ */
+export function toLatLng(geo: unknown): LatLng | null {
+  if (!geo) return null;
+  if (typeof geo === "string") {
+    return /^[0-9A-Fa-f]{40,}$/.test(geo) ? wkbHexToLatLng(geo) : null;
+  }
+  if (typeof geo === "object" && "coordinates" in (geo as Record<string, unknown>)) {
+    const coords = (geo as GeoJSONPoint).coordinates;
+    if (!coords) return null;
+    const [longitude, latitude] = coords;
+    return { latitude, longitude };
+  }
+  return null;
 }
 
-/** Build the GeoJSON Postgres accepts for a geography insert (`lng,lat`). */
-export function toGeoJSON(point: LatLng): GeoJSONPoint {
-  return { type: "Point", coordinates: [point.longitude, point.latitude] };
+/** Parse a (E)WKB hex Point into {lat,lng}. Handles the optional SRID flag. */
+export function wkbHexToLatLng(hex: string): LatLng | null {
+  try {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+    const dv = new DataView(bytes.buffer);
+    const little = dv.getUint8(0) === 1;
+    const type = dv.getUint32(1, little);
+    let offset = 5; // byte-order(1) + geometry-type(4)
+    if ((type & 0x20000000) !== 0) offset += 4; // skip SRID when the flag is set
+    const longitude = dv.getFloat64(offset, little);
+    const latitude = dv.getFloat64(offset + 8, little);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+    return { latitude, longitude };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Build the value PostgREST/PostGIS accept for a geography INSERT/UPDATE.
+ * Must be EWKT text — sending a GeoJSON object fails with "invalid geometry".
+ */
+export function toEWKT(point: LatLng): string {
+  return `SRID=4326;POINT(${point.longitude} ${point.latitude})`;
 }
 
 const EARTH_RADIUS_M = 6_371_000;
