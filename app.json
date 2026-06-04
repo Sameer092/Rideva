@@ -36,7 +36,7 @@
       "package": "com.rideva.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B0B0F"
+        "backgroundColor": "#6D5EF6"
       },
       "permissions": [
         "ACCESS_COARSE_LOCATION",
