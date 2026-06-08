@@ -8,6 +8,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { signInSchema, type SignInValues } from "@/utils/validation";
 import { authService } from "@/services/auth";
 import { useAuthStore } from "@/store/authStore";
@@ -75,7 +76,7 @@ export function SignInScreen({ navigation }: Props) {
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="Email"
-                  leftIcon={<Text className="text-base">✉️</Text>}
+                  leftIcon={<Icon name="mail-outline" muted />}
                   autoCapitalize="none"
                   keyboardType="email-address"
                   placeholder="you@example.com"
@@ -92,7 +93,7 @@ export function SignInScreen({ navigation }: Props) {
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
                   label="Password"
-                  leftIcon={<Text className="text-base">🔒</Text>}
+                  leftIcon={<Icon name="lock-closed-outline" muted />}
                   secureTextEntry
                   placeholder="••••••••"
                   value={value}

@@ -11,6 +11,7 @@ import { DriverCard } from "@/components/ride/DriverCard";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/ui/Icon";
 import { LoadingState } from "@/components/ui/States";
 import { useActiveRide } from "@/hooks/useActiveRide";
 import { useDriverTracking } from "@/hooks/useDriverTracking";
@@ -104,7 +105,7 @@ export function RideTrackingScreen({ navigation }: Props) {
             <ScrollView style={{ maxHeight: 320 }} showsVerticalScrollIndicator={false}>
               {(bids ?? []).length === 0 ? (
                 <View className="items-center gap-2 py-6">
-                  <Text className="text-3xl">🔎</Text>
+                  <Icon name="search" size={28} muted />
                   <Text className="text-center text-light-textMuted dark:text-dark-textMuted">
                     Drivers nearby are reviewing your request…
                   </Text>
@@ -116,7 +117,7 @@ export function RideTrackingScreen({ navigation }: Props) {
                     <View className="flex-1">
                       <Text className="font-extrabold text-light-text dark:text-dark-text">{b.driverName}</Text>
                       <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">
-                        ★ {b.rating.toFixed(1)} · {formatDistance(b.distanceM)} · {formatEta(b.etaS)}
+                        {b.rating > 0 ? `★ ${b.rating.toFixed(1)}` : "New"} · {formatDistance(b.distanceM)} · {formatEta(b.etaS)}
                       </Text>
                       <View className="mt-0.5 flex-row items-center gap-2">
                         <Text className="text-xs text-light-textMuted dark:text-dark-textMuted" numberOfLines={1}>

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable, Linking } from "react-native";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/ui/Icon";
 import type { Driver, Profile } from "@/types";
 
 interface Props {
@@ -20,7 +21,9 @@ export function DriverCard({ driver, profile, etaLabel }: Props) {
         <View className="flex-1">
           <Text className="text-base font-extrabold text-light-text dark:text-dark-text">{profile.fullName}</Text>
           <View className="flex-row items-center gap-1">
-            <Text className="text-sm font-bold text-warning">★ {profile.ratingAvg.toFixed(2)}</Text>
+            <Text className="text-sm font-bold text-warning">
+              {profile.ratingCount > 0 ? `★ ${profile.ratingAvg.toFixed(1)}` : "New"}
+            </Text>
             <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">· {driver.totalTrips} rides</Text>
           </View>
           <Text className="text-sm text-light-textMuted dark:text-dark-textMuted">
@@ -41,7 +44,7 @@ export function DriverCard({ driver, profile, etaLabel }: Props) {
               onPress={() => Linking.openURL(`tel:${profile.phone}`)}
               className="h-11 w-11 items-center justify-center rounded-full bg-brand"
             >
-              <Text className="text-lg">📞</Text>
+              <Icon name="call" size={18} color="#ffffff" />
             </Pressable>
           )}
         </View>

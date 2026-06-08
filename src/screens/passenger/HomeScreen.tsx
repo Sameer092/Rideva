@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -13,6 +13,7 @@ import { RideMap } from "@/components/map/RideMap";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
 import { Chip } from "@/components/ui/Chip";
+import { Icon } from "@/components/ui/Icon";
 import { SheetHandle } from "@/components/ui/ScreenHeader";
 import { VehicleClassSelector } from "@/components/ride/VehicleClassSelector";
 import { useRideStore } from "@/store/rideStore";
@@ -37,6 +38,7 @@ type Props = CompositeScreenProps<
 export function HomeScreen({ navigation }: Props) {
   const mapRef = useRef<RideMapHandle>(null);
   const sheetRef = useRef<BottomSheet>(null);
+  const insets = useSafeAreaInsets();
   const { colors } = useTheme();
   const profile = useAuthStore((s) => s.profile);
   const { pickup, dropoff, vehicleClass, setPickup, setVehicleClass } = useRideStore();
@@ -114,9 +116,9 @@ export function HomeScreen({ navigation }: Props) {
     <View className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       <RideMap ref={mapRef} region={region} pickup={pickup?.point} dropoff={dropoff?.point} vehicles={nearbyDrivers ?? []} />
 
-      {/* Floating top bar */}
-      <SafeAreaView edges={["top"]} className="absolute inset-x-0 top-0">
-        <View className="flex-row items-center justify-between px-5 pt-2">
+      {/* Floating top bar — paddingTop clears the status bar / Dynamic Island */}
+      <View className="absolute inset-x-0 top-0" style={{ paddingTop: insets.top + 6 }}>
+        <View className="flex-row items-center justify-between px-5">
           <View
             className="flex-row items-center gap-3 rounded-full bg-surface-light dark:bg-surface-dark px-3 py-2"
             style={SHADOWS.md}
@@ -134,10 +136,10 @@ export function HomeScreen({ navigation }: Props) {
             className="h-12 w-12 items-center justify-center rounded-full bg-surface-light dark:bg-surface-dark"
             style={SHADOWS.md}
           >
-            <Text className="text-lg">⭐</Text>
+            <Icon name="star" size={20} color="#F59E0B" />
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
 
       {/* Booking bottom sheet */}
       <BottomSheet
@@ -162,7 +164,7 @@ export function HomeScreen({ navigation }: Props) {
               <Text numberOfLines={1} className="flex-1 font-semibold text-light-text dark:text-dark-text">
                 {locating ? "Locating you…" : pickup?.address ?? "Set pickup location"}
               </Text>
-              <Text className="text-base">✏️</Text>
+              <Icon name="create-outline" size={18} muted />
             </Pressable>
             <View className="ml-[18px] h-4 w-0.5 bg-light-border dark:bg-dark-border" />
             <Pressable
@@ -173,14 +175,14 @@ export function HomeScreen({ navigation }: Props) {
               <Text numberOfLines={1} className="flex-1 font-semibold text-light-text dark:text-dark-text">
                 {dropoff?.address ?? "Where are you going?"}
               </Text>
-              <Text className="text-base">✏️</Text>
+              <Icon name="create-outline" size={18} muted />
             </Pressable>
           </View>
 
           {!dropoff && (
             <View className="flex-row gap-2.5">
-              <Chip label="Choose on map" icon={<Text>📍</Text>} onPress={() => navigation.navigate("LocationPicker", { field: "dropoff" })} />
-              <Chip label="Saved" icon={<Text>⭐</Text>} onPress={() => navigation.navigate("SavedLocations")} />
+              <Chip label="Choose on map" icon={<Icon name="location-outline" size={16} muted />} onPress={() => navigation.navigate("LocationPicker", { field: "dropoff" })} />
+              <Chip label="Saved" icon={<Icon name="star-outline" size={16} muted />} onPress={() => navigation.navigate("SavedLocations")} />
             </View>
           )}
 

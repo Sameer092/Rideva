@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
 import { EmptyState, LoadingState } from "@/components/ui/States";
 import { rideService } from "@/services/rides";
 import { qk } from "@/lib/queryClient";
@@ -60,12 +61,12 @@ export function EarningsScreen() {
             <Text className="px-1 font-extrabold text-light-text dark:text-dark-text">Recent payouts</Text>
           </View>
         }
-        ListEmptyComponent={<EmptyState emoji="💵" title="No earnings yet" subtitle="Complete rides to start earning." />}
+        ListEmptyComponent={<EmptyState icon="cash-outline" title="No earnings yet" subtitle="Complete rides to start earning." />}
         renderItem={({ item }) => (
           <Card elevation="sm" className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-3">
               <View className="h-10 w-10 items-center justify-center rounded-2xl bg-success/15">
-                <Text>🚗</Text>
+                <Icon name="car-sport" size={18} color="#10B981" />
               </View>
               <View>
                 <Text className="font-extrabold text-light-text dark:text-dark-text">Ride payout</Text>

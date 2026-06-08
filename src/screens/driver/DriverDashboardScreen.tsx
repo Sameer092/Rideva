@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Switch, Alert, ScrollView, Pressable, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -10,6 +10,7 @@ import type { DriverStackParamList, DriverTabParamList } from "@/navigation/type
 import { RideMap } from "@/components/map/RideMap";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { useNearbyRequests } from "@/hooks/useNearbyRequests";
 import { useActiveRide } from "@/hooks/useActiveRide";
 import { useDriverLocationBroadcast } from "@/hooks/useDriverLocationBroadcast";
@@ -24,6 +25,7 @@ type Props = CompositeScreenProps<
 >;
 
 export function DriverDashboardScreen({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const [online, setOnline] = useState(false);
   const { data: activeRide } = useActiveRide();
   const { data: requests } = useNearbyRequests(online && !activeRide);
@@ -65,7 +67,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
     <View className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       <RideMap />
 
-      <SafeAreaView edges={["top"]} className="absolute inset-x-0 top-0 px-4">
+      <View className="absolute inset-x-0 top-0 px-4" style={{ paddingTop: insets.top + 6 }}>
         <Card className="flex-row items-center justify-between" elevation="lg">
           <View className="flex-row items-center gap-3">
             <View className={`h-3 w-3 rounded-full ${online ? "bg-success" : "bg-light-textMuted"}`} />
@@ -80,7 +82,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
           </View>
           <Switch value={online} onValueChange={toggleOnline} trackColor={{ true: "#6D5EF6" }} thumbColor="#fff" />
         </Card>
-      </SafeAreaView>
+      </View>
 
       {online && (
         <SafeAreaView edges={["bottom"]} className="absolute inset-x-0 bottom-0" style={{ maxHeight: "62%" }}>
@@ -91,7 +93,7 @@ export function DriverDashboardScreen({ navigation }: Props) {
             <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
               {(requests ?? []).length === 0 ? (
                 <View className="items-center gap-2 py-8">
-                  <Text className="text-3xl">📡</Text>
+                  <Icon name="radio-outline" size={30} muted />
                   <Text className="text-center text-light-textMuted dark:text-dark-textMuted">
                     Waiting for ride requests near you…
                   </Text>
@@ -101,8 +103,14 @@ export function DriverDashboardScreen({ navigation }: Props) {
                   <View key={r.rideId} className="mb-3 rounded-2xl bg-light-border/40 dark:bg-elevated-dark p-3">
                     <View className="flex-row items-start justify-between">
                       <View className="flex-1 pr-2">
-                        <Text numberOfLines={1} className="font-semibold text-light-text dark:text-dark-text">📍 {r.pickupAddress}</Text>
-                        <Text numberOfLines={1} className="text-light-textMuted dark:text-dark-textMuted">🏁 {r.dropoffAddress}</Text>
+                        <View className="flex-row items-center gap-1.5">
+                          <Icon name="location" size={13} color="#6D5EF6" />
+                          <Text numberOfLines={1} className="flex-1 font-semibold text-light-text dark:text-dark-text">{r.pickupAddress}</Text>
+                        </View>
+                        <View className="flex-row items-center gap-1.5">
+                          <Icon name="flag" size={13} muted />
+                          <Text numberOfLines={1} className="flex-1 text-light-textMuted dark:text-dark-textMuted">{r.dropoffAddress}</Text>
+                        </View>
                         <Text className="mt-1 text-xs text-light-textMuted dark:text-dark-textMuted">
                           {formatDistance(r.pickupDistanceM)} away · ride {formatDistance(r.tripDistanceM)} · {formatEta(r.etaS)}
                         </Text>

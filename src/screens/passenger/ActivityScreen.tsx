@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/Chip";
+import { Icon } from "@/components/ui/Icon";
 import { EmptyState, LoadingState } from "@/components/ui/States";
 import { rideService } from "@/services/rides";
 import { qk } from "@/lib/queryClient";
@@ -30,12 +31,12 @@ export function ActivityScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 16, gap: 12 }}
         ListHeaderComponent={<Text className="px-1 pb-1 pt-2 text-3xl font-black text-light-text dark:text-dark-text">Your rides</Text>}
-        ListEmptyComponent={<EmptyState emoji="🧾" title="No rides yet" subtitle="Your completed rides will appear here." />}
+        ListEmptyComponent={<EmptyState icon="receipt-outline" title="No rides yet" subtitle="Your completed rides will appear here." />}
         renderItem={({ item }) => (
           <Card elevation="sm">
             <View className="flex-row items-start gap-3">
               <View className="h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-700/25">
-                <Text>📍</Text>
+                <Icon name="location" size={18} color="#6D5EF6" />
               </View>
               <View className="flex-1">
                 <Text className="font-extrabold text-light-text dark:text-dark-text" numberOfLines={1}>

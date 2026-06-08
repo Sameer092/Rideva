@@ -15,11 +15,29 @@ const redirectTo = makeRedirectUri({ scheme: "rideva", path: "auth/callback" });
  * Covers email/password, Google (OAuth via system browser + deep link),
  * Apple (native), password reset, and profile loading.
  */
+/** Retry a supabase call on transient "Network request failed" errors only. */
+async function withRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      const msg = String((e as { message?: string })?.message ?? "");
+      if (!/network request failed|network error|fetch/i.test(msg)) throw e;
+      await new Promise((r) => setTimeout(r, 700));
+    }
+  }
+  throw lastErr;
+}
+
 export const authService = {
   async signIn({ email, password }: SignInValues) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    return data;
+    return withRetry(async () => {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      return data;
+    });
   },
 
   async signUp({ email, password, fullName, phone, role, vehicleClass, licensePlate, vehicleName }: SignUpValues) {
@@ -67,8 +85,22 @@ export const authService = {
   },
 
   async resetPassword(email: string) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
-    if (error) throw error;
+    // Retry transient "Network request failed" (mobile networks flap); the
+    // server is idempotent for password-reset requests.
+    let lastErr: unknown;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+        if (error) throw error;
+        return;
+      } catch (e) {
+        lastErr = e;
+        const msg = String((e as { message?: string })?.message ?? "");
+        if (!/network request failed|network error|fetch/i.test(msg)) throw e;
+        await new Promise((r) => setTimeout(r, 700));
+      }
+    }
+    throw lastErr;
   },
 
   /** Google OAuth via the system browser, returning to the app via deep link. */

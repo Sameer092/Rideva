@@ -6,6 +6,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PassengerStackParamList } from "@/navigation/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { StatusBadge } from "@/components/ui/Chip";
 import { LoadingState } from "@/components/ui/States";
 import { rideService } from "@/services/rides";
@@ -24,7 +25,9 @@ export function RideSummaryScreen({ navigation, route }: Props) {
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }} showsVerticalScrollIndicator={false}>
         <View className="items-center gap-2 pt-4">
-          <Text className="text-6xl">🎉</Text>
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-success/15">
+            <Icon name="checkmark-circle" size={56} color="#10B981" />
+          </View>
           <Text className="text-3xl font-black text-light-text dark:text-dark-text">Ride complete</Text>
           <Text className="text-light-textMuted dark:text-dark-textMuted">Thanks for riding with Rideva</Text>
         </View>

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Button } from "./Button";
 
 /** Centred spinner for full-screen loading. */
@@ -16,13 +17,13 @@ export function LoadingState({ message }: { message?: string }) {
 
 /** Friendly empty placeholder with optional CTA. */
 export function EmptyState({
-  emoji = "📭",
+  icon = "file-tray-outline",
   title,
   subtitle,
   actionLabel,
   onAction,
 }: {
-  emoji?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   title: string;
   subtitle?: string;
   actionLabel?: string;
@@ -31,7 +32,7 @@ export function EmptyState({
   return (
     <View className="flex-1 items-center justify-center gap-3 p-10">
       <View className="h-24 w-24 items-center justify-center rounded-4xl bg-light-border/50 dark:bg-elevated-dark">
-        <Text className="text-5xl">{emoji}</Text>
+        <Ionicons name={icon} size={44} color="#9AA0AD" />
       </View>
       <Text className="text-xl font-extrabold text-light-text dark:text-dark-text">{title}</Text>
       {subtitle && (
@@ -51,7 +52,7 @@ export function ErrorState({ message, onRetry }: { message?: string; onRetry?: (
   return (
     <View className="flex-1 items-center justify-center gap-3 p-10">
       <View className="h-24 w-24 items-center justify-center rounded-4xl bg-danger/10">
-        <Text className="text-5xl">⚠️</Text>
+        <Ionicons name="alert-circle-outline" size={44} color="#EF4444" />
       </View>
       <Text className="text-xl font-extrabold text-light-text dark:text-dark-text">Something went wrong</Text>
       <Text className="text-center text-light-textMuted dark:text-dark-textMuted">

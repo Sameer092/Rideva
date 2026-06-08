@@ -8,6 +8,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Icon, VehicleIcon } from "@/components/ui/Icon";
 import { signUpSchema, type SignUpValues } from "@/utils/validation";
 import { authService } from "@/services/auth";
 import { useAuthStore } from "@/store/authStore";
@@ -85,8 +86,8 @@ export function SignUpScreen({ navigation }: Props) {
             {/* Role selector */}
             <View className="flex-row gap-3">
               {([
-                { key: "passenger", emoji: "🧍", title: "Ride", sub: "Book rides" },
-                { key: "driver", emoji: "🚗", title: "Drive", sub: "Earn money" },
+                { key: "passenger", icon: "person", title: "Ride", sub: "Book rides" },
+                { key: "driver", icon: "car-sport", title: "Drive", sub: "Earn money" },
               ] as const).map((r) => {
                 const active = role === r.key;
                 return (
@@ -97,8 +98,8 @@ export function SignUpScreen({ navigation }: Props) {
                       active ? "border-brand bg-brand-50 dark:bg-brand-700/25" : "border-light-border dark:border-dark-border"
                     }`}
                   >
-                    <Text className="text-3xl">{r.emoji}</Text>
-                    <Text className="text-lg font-extrabold text-light-text dark:text-dark-text">{r.title}</Text>
+                    <Icon name={r.icon} size={28} color={active ? "#6D5EF6" : undefined} />
+                    <Text className="mt-1 text-lg font-extrabold text-light-text dark:text-dark-text">{r.title}</Text>
                     <Text className="text-xs text-light-textMuted dark:text-dark-textMuted">{r.sub}</Text>
                   </Pressable>
                 );
@@ -122,7 +123,7 @@ export function SignUpScreen({ navigation }: Props) {
                           active ? "border-brand bg-brand-50 dark:bg-brand-700/25" : "border-light-border dark:border-dark-border"
                         }`}
                       >
-                        <Text>{vc.icon}</Text>
+                        <VehicleIcon vehicle={vc.key} size={18} color={active ? "#6D5EF6" : undefined} />
                         <Text className="font-bold text-light-text dark:text-dark-text">{vc.label}</Text>
                       </Pressable>
                     );
@@ -130,25 +131,25 @@ export function SignUpScreen({ navigation }: Props) {
                 </View>
 
                 <Controller control={control} name="vehicleName" render={({ field: { onChange, value } }) => (
-                  <Input label="Vehicle" leftIcon={<Text>🚘</Text>} placeholder="White Toyota Corolla" value={value ?? ""} onChangeText={onChange} />
+                  <Input label="Vehicle" leftIcon={<Icon name="car-outline" muted />} placeholder="White Toyota Corolla" value={value ?? ""} onChangeText={onChange} />
                 )} />
                 <Controller control={control} name="licensePlate" render={({ field: { onChange, value } }) => (
-                  <Input label="Vehicle number (plate)" leftIcon={<Text>🔢</Text>} autoCapitalize="characters" placeholder="ABC-123" value={value ?? ""} onChangeText={onChange} />
+                  <Input label="Vehicle number (plate)" leftIcon={<Icon name="pricetag-outline" muted />} autoCapitalize="characters" placeholder="ABC-123" value={value ?? ""} onChangeText={onChange} />
                 )} />
               </View>
             )}
 
             <Controller control={control} name="fullName" render={({ field: { onChange, value } }) => (
-              <Input label="Full name" leftIcon={<Text>👤</Text>} placeholder="Jane Doe" value={value} onChangeText={onChange} error={errors.fullName?.message} />
+              <Input label="Full name" leftIcon={<Icon name="person-outline" muted />} placeholder="Jane Doe" value={value} onChangeText={onChange} error={errors.fullName?.message} />
             )} />
             <Controller control={control} name="email" render={({ field: { onChange, value } }) => (
-              <Input label="Email" leftIcon={<Text>✉️</Text>} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" value={value} onChangeText={onChange} error={errors.email?.message} />
+              <Input label="Email" leftIcon={<Icon name="mail-outline" muted />} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" value={value} onChangeText={onChange} error={errors.email?.message} />
             )} />
             <Controller control={control} name="phone" render={({ field: { onChange, value } }) => (
-              <Input label="Phone (optional)" leftIcon={<Text>📱</Text>} keyboardType="phone-pad" placeholder="+1 555 000 0000" value={value} onChangeText={onChange} error={errors.phone?.message} />
+              <Input label="Phone (optional)" leftIcon={<Icon name="call-outline" muted />} keyboardType="phone-pad" placeholder="+1 555 000 0000" value={value} onChangeText={onChange} error={errors.phone?.message} />
             )} />
             <Controller control={control} name="password" render={({ field: { onChange, value } }) => (
-              <Input label="Password" leftIcon={<Text>🔒</Text>} secureTextEntry placeholder="At least 8 characters" value={value} onChangeText={onChange} error={errors.password?.message} />
+              <Input label="Password" leftIcon={<Icon name="lock-closed-outline" muted />} secureTextEntry placeholder="At least 8 characters" value={value} onChangeText={onChange} error={errors.password?.message} />
             )} />
 
             <Button label="Create account" size="lg" loading={loading} onPress={handleSubmit(onSubmit)} />

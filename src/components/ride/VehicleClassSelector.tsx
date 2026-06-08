@@ -1,6 +1,7 @@
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { VEHICLE_CLASSES } from "@/constants";
+import { VehicleIcon } from "@/components/ui/Icon";
 import { formatMoney } from "@/utils/format";
 import type { VehicleClass, FareBreakdown } from "@/types";
 
@@ -34,7 +35,7 @@ export function VehicleClassSelector({ selected, onSelect, fares }: Props) {
             }`}
           >
             <View className={`h-12 w-12 items-center justify-center rounded-2xl ${active ? "bg-brand" : "bg-surface-light dark:bg-surface-dark"}`}>
-              <Text className="text-2xl">{vc.icon}</Text>
+              <VehicleIcon vehicle={vc.key} size={26} color={active ? "#ffffff" : undefined} />
             </View>
             <View className="flex-1">
               <Text className="text-base font-extrabold text-light-text dark:text-dark-text">{vc.label}</Text>

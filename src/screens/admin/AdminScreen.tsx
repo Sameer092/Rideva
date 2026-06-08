@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabase";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { LoadingState } from "@/components/ui/States";
 import { authService } from "@/services/auth";
 import { GRADIENTS, GRADIENT_DIRECTION, SHADOWS } from "@/theme";
@@ -34,11 +35,11 @@ export function AdminScreen() {
   if (isLoading) return <LoadingState />;
 
   const tiles = [
-    { label: "Total users", value: data?.users, emoji: "👥" },
-    { label: "Active rides", value: data?.activeRides, emoji: "🚕" },
-    { label: "Online drivers", value: data?.onlineDrivers, emoji: "🟢" },
-    { label: "Open disputes", value: data?.openReports, emoji: "⚠️" },
-  ];
+    { label: "Total users", value: data?.users, icon: "people", color: "#6D5EF6" },
+    { label: "Active rides", value: data?.activeRides, icon: "car-sport", color: "#10B981" },
+    { label: "Online drivers", value: data?.onlineDrivers, icon: "radio", color: "#0EA5E9" },
+    { label: "Open disputes", value: data?.openReports, icon: "alert-circle", color: "#EF4444" },
+  ] as const;
 
   return (
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark" edges={["top"]}>
@@ -59,7 +60,7 @@ export function AdminScreen() {
         <View className="flex-row flex-wrap gap-3">
           {tiles.map((t) => (
             <Card key={t.label} className="w-[47%]" elevation="sm">
-              <Text className="text-2xl">{t.emoji}</Text>
+              <Icon name={t.icon} size={24} color={t.color} />
               <Text className="mt-1 text-3xl font-black text-light-text dark:text-dark-text">{t.value}</Text>
               <Text className="text-light-textMuted dark:text-dark-textMuted">{t.label}</Text>
             </Card>

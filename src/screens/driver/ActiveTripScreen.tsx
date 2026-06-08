@@ -7,6 +7,7 @@ import type { DriverStackParamList } from "@/navigation/types";
 import { RideMap } from "@/components/map/RideMap";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { LoadingState } from "@/components/ui/States";
 import { useActiveRide } from "@/hooks/useActiveRide";
 import { useDriverLocationBroadcast } from "@/hooks/useDriverLocationBroadcast";
@@ -80,7 +81,7 @@ export function ActiveTripScreen({ navigation }: Props) {
         <Card elevation="lg">
           <View className="flex-row items-center gap-3">
             <View className="h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 dark:bg-brand-700/25">
-              <Text className="text-xl">{goingToDropoff ? "🏁" : "📍"}</Text>
+              <Icon name={goingToDropoff ? "flag" : "location"} size={22} color="#6D5EF6" />
             </View>
             <View className="flex-1">
               <Text className="text-xs font-bold uppercase tracking-wide text-brand">
@@ -93,7 +94,7 @@ export function ActiveTripScreen({ navigation }: Props) {
           </View>
         </Card>
 
-        <Button label="Open navigation" variant="outline" leftIcon={<Text>🧭</Text>} onPress={openExternalNav} />
+        <Button label="Open navigation" variant="outline" leftIcon={<Icon name="navigate-outline" size={18} />} onPress={openExternalNav} />
         <Button label={cta} size="lg" loading={busy} onPress={advance} />
         {["accepted", "arriving"].includes(ride.status) && (
           <Button

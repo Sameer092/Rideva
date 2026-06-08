@@ -6,20 +6,22 @@ import { useNavigation } from "@react-navigation/native";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { Icon } from "@/components/ui/Icon";
+import { Ionicons } from "@expo/vector-icons";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { useAuthStore } from "@/store/authStore";
 import { useTheme } from "@/hooks/useTheme";
 import { authService } from "@/services/auth";
 import { GRADIENTS, GRADIENT_DIRECTION, SHADOWS } from "@/theme";
 
-function Row({ icon, label, onPress }: { icon: string; label: string; onPress?: () => void }) {
+function Row({ icon, label, onPress }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress?: () => void }) {
   return (
     <Pressable onPress={onPress} className="flex-row items-center gap-3 px-5 py-4 active:opacity-60">
       <View className="h-9 w-9 items-center justify-center rounded-xl bg-light-border/50 dark:bg-elevated-dark">
-        <Text className="text-base">{icon}</Text>
+        <Icon name={icon} size={18} color="#6D5EF6" />
       </View>
       <Text className="flex-1 font-bold text-light-text dark:text-dark-text">{label}</Text>
-      <Text className="text-light-textMuted dark:text-dark-textMuted">›</Text>
+      <Icon name="chevron-forward" muted size={18} />
     </Pressable>
   );
 }
@@ -48,7 +50,9 @@ export function AccountScreen() {
                 <Text className="text-white/70">{profile?.email}</Text>
               </View>
               <View className="flex-row items-center gap-2 rounded-full bg-white/20 px-4 py-1.5">
-                <Text className="font-bold text-white">★ {profile?.ratingAvg.toFixed(2)}</Text>
+                <Text className="font-bold text-white">
+                  {profile && profile.ratingCount > 0 ? `★ ${profile.ratingAvg.toFixed(1)}` : "New"}
+                </Text>
                 <Text className="text-white/70">·</Text>
                 <Text className="font-bold capitalize text-white">{profile?.role}</Text>
               </View>
@@ -58,10 +62,10 @@ export function AccountScreen() {
 
         <View className="-mt-5 gap-4 rounded-t-3xl bg-canvas-light dark:bg-canvas-dark px-5 pt-6">
           <Card padded={false} className="overflow-hidden py-1">
-            <Row icon="✏️" label="Edit profile" onPress={() => navigation.navigate("EditProfile")} />
-            {isPassenger && <Row icon="⭐" label="Saved places" onPress={() => navigation.navigate("SavedLocations")} />}
-            <Row icon="🧾" label="Ride history" onPress={() => navigation.navigate(isPassenger ? "ActivityTab" : "TripsTab")} />
-            <Row icon="🛟" label="Help & support" onPress={() => comingSoon("Help & support")} />
+            <Row icon="create-outline" label="Edit profile" onPress={() => navigation.navigate("EditProfile")} />
+            {isPassenger && <Row icon="star-outline" label="Saved places" onPress={() => navigation.navigate("SavedLocations")} />}
+            <Row icon="receipt-outline" label="Ride history" onPress={() => navigation.navigate(isPassenger ? "ActivityTab" : "TripsTab")} />
+            <Row icon="help-buoy-outline" label="Help & support" onPress={() => comingSoon("Help & support")} />
           </Card>
 
           <Card>

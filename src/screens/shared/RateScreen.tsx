@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { PassengerStackParamList } from "@/navigation/types";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { RatingStars } from "@/components/ui/RatingStars";
 import { rideService } from "@/services/rides";
 import { useAuthStore } from "@/store/authStore";
@@ -36,7 +37,9 @@ export function RateScreen({ navigation, route }: Props) {
     <SafeAreaView className="flex-1 bg-canvas-light dark:bg-canvas-dark">
       <View className="flex-1 justify-center gap-7 px-6">
         <View className="items-center gap-2">
-          <Text className="text-6xl">🌟</Text>
+          <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50 dark:bg-brand-700/25">
+            <Icon name="star" size={48} color="#F59E0B" />
+          </View>
           <Text className="text-center text-3xl font-black text-light-text dark:text-dark-text">How was your ride?</Text>
           <Text className="text-light-textMuted dark:text-dark-textMuted">Your feedback keeps Rideva great</Text>
         </View>

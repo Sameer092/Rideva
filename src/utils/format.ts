@@ -33,6 +33,12 @@ export function formatEta(seconds: number | null | undefined): string {
   return `${mins} min away`;
 }
 
+/** "4.9" when rated, "New" when the user has no ratings yet. */
+export function formatRating(avg: number, count?: number): string {
+  const unrated = count !== undefined ? count <= 0 : avg <= 0;
+  return unrated ? "New" : avg.toFixed(1);
+}
+
 export function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60000);

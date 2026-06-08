@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface RatingStarsProps {
   value: number;
@@ -8,7 +9,7 @@ interface RatingStarsProps {
   readOnly?: boolean;
 }
 
-/** Tappable 1–5 star rating (read-only when no onChange supplied). */
+/** Tappable 1–5 star rating using vector star icons. */
 export function RatingStars({ value, onChange, size = 32, readOnly = false }: RatingStarsProps) {
   return (
     <View className="flex-row gap-1.5">
@@ -20,7 +21,7 @@ export function RatingStars({ value, onChange, size = 32, readOnly = false }: Ra
           accessibilityLabel={`${star} star${star > 1 ? "s" : ""}`}
           onPress={() => onChange?.(star)}
         >
-          <Text style={{ fontSize: size }}>{star <= value ? "⭐" : "☆"}</Text>
+          <Ionicons name={star <= value ? "star" : "star-outline"} size={size} color={star <= value ? "#F59E0B" : "#9AA0AD"} />
         </Pressable>
       ))}
     </View>

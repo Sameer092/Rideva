@@ -7,6 +7,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { forgotPasswordSchema, type ForgotPasswordValues } from "@/utils/validation";
 import { authService } from "@/services/auth";
@@ -40,7 +41,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
       </View>
       <View className="flex-1 justify-center gap-6 px-6">
         <View className="h-16 w-16 items-center justify-center rounded-3xl bg-brand-50 dark:bg-brand-700/25">
-          <Text className="text-3xl">🔑</Text>
+          <Icon name="key-outline" size={30} color="#6D5EF6" />
         </View>
         <View className="gap-2">
           <Text className="text-4xl font-black text-light-text dark:text-dark-text">Reset password</Text>
@@ -49,7 +50,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
           </Text>
         </View>
         <Controller control={control} name="email" render={({ field: { onChange, value } }) => (
-          <Input label="Email" leftIcon={<Text>✉️</Text>} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" value={value} onChangeText={onChange} error={errors.email?.message} />
+          <Input label="Email" leftIcon={<Icon name="mail-outline" muted />} autoCapitalize="none" keyboardType="email-address" placeholder="you@example.com" value={value} onChangeText={onChange} error={errors.email?.message} />
         )} />
         <Button label="Send reset link" size="lg" loading={loading} onPress={handleSubmit(onSubmit)} />
       </View>

@@ -5,6 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { AuthStackParamList } from "@/navigation/types";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 import { GoogleLogo, AppleLogo } from "@/components/ui/BrandLogos";
 import { authService } from "@/services/auth";
 import { GRADIENTS, GRADIENT_DIRECTION } from "@/theme";
@@ -24,7 +25,7 @@ export function WelcomeScreen({ navigation }: Props) {
           <View className="flex-1 justify-between p-7">
             <View className="flex-1 justify-center">
               <View className="h-20 w-20 items-center justify-center rounded-3xl bg-brand mb-7">
-                <Text className="text-4xl">🚕</Text>
+                <Icon name="location" size={40} color="#ffffff" />
               </View>
               <Text className="text-6xl font-black tracking-tight text-white">Rideva</Text>
               <Text className="mt-3 text-xl leading-7 text-white/70">

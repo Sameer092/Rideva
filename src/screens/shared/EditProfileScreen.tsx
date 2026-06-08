@@ -6,6 +6,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
+import { Icon, VehicleIcon } from "@/components/ui/Icon";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { useAuthStore } from "@/store/authStore";
 import { profileService } from "@/services/profile";
@@ -97,16 +98,16 @@ export function EditProfileScreen({ navigation }: { navigation: { goBack: () => 
           </Pressable>
         </View>
 
-        <Input label="Full name" leftIcon={<Text>👤</Text>} value={fullName} onChangeText={setFullName} />
-        <Input label="Phone" leftIcon={<Text>📱</Text>} keyboardType="phone-pad" value={phone} onChangeText={setPhone} placeholder="+1 555 000 0000" />
+        <Input label="Full name" leftIcon={<Icon name="person-outline" muted />} value={fullName} onChangeText={setFullName} />
+        <Input label="Phone" leftIcon={<Icon name="call-outline" muted />} keyboardType="phone-pad" value={phone} onChangeText={setPhone} placeholder="+1 555 000 0000" />
 
         {/* Email — read only */}
         <View className="gap-2">
           <Text className="ml-1 text-sm font-semibold text-light-textMuted dark:text-dark-textMuted">Email (can't be changed)</Text>
           <View className="flex-row items-center gap-3 rounded-2xl border-2 border-light-border dark:border-dark-border px-4 h-[56px] opacity-60">
-            <Text>✉️</Text>
+            <Icon name="mail-outline" muted />
             <Text className="flex-1 text-base font-medium text-light-text dark:text-dark-text">{profile?.email}</Text>
-            <Text>🔒</Text>
+            <Icon name="lock-closed" muted size={16} />
           </View>
         </View>
 
@@ -125,15 +126,15 @@ export function EditProfileScreen({ navigation }: { navigation: { goBack: () => 
                         active ? "border-brand bg-brand-50 dark:bg-brand-700/25" : "border-light-border dark:border-dark-border"
                       }`}
                     >
-                      <Text>{vc.icon}</Text>
+                      <VehicleIcon vehicle={vc.key} size={18} color={active ? "#6D5EF6" : undefined} />
                       <Text className="font-bold text-light-text dark:text-dark-text">{vc.label}</Text>
                     </Pressable>
                   );
                 })}
               </View>
             </View>
-            <Input label="Vehicle" leftIcon={<Text>🚘</Text>} value={vehicleMake} onChangeText={setVehicleMake} placeholder="White Toyota Corolla" />
-            <Input label="Vehicle number (plate)" leftIcon={<Text>🔢</Text>} autoCapitalize="characters" value={plate} onChangeText={setPlate} placeholder="ABC-123" />
+            <Input label="Vehicle" leftIcon={<Icon name="car-outline" muted />} value={vehicleMake} onChangeText={setVehicleMake} placeholder="White Toyota Corolla" />
+            <Input label="Vehicle number (plate)" leftIcon={<Icon name="pricetag-outline" muted />} autoCapitalize="characters" value={plate} onChangeText={setPlate} placeholder="ABC-123" />
           </View>
         )}
 
