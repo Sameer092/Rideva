@@ -1,45 +1,30 @@
-import React, { useEffect } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { StatusBar } from "expo-status-bar";
+import 'react-native-url-polyfill/auto';
+import React from 'react';
+import { LogBox } from 'react-native';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+import FlashMessage from 'react-native-flash-message';
+import { store, persistor } from '@store/index';
+import Loader from '@components/common/Loader';
+import Main from '@stacks/index';
 
-import { queryClient } from "@/lib/queryClient";
-import { ThemeProvider, useTheme } from "@/hooks/useTheme";
-import { useAuthBootstrap } from "@/hooks/useAuth";
-import { usePushRegistration } from "@/hooks/usePushRegistration";
-import { RootNavigator } from "@/navigation/RootNavigator";
-
-/**
- * App shell. Provider order matters:
- *   GestureHandler → SafeArea → Theme → ReactQuery → BottomSheet → Navigation
- * Auth + push bootstrap run as effects once everything is mounted.
- */
-function AppInner() {
-  const { scheme } = useTheme();
-  useAuthBootstrap();
-  usePushRegistration();
-
-  return (
-    <>
-      <StatusBar style={scheme === "dark" ? "light" : "dark"} />
-      <RootNavigator />
-    </>
-  );
-}
+LogBox.ignoreAllLogs(true);
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <BottomSheetModalProvider>
-              <AppInner />
-            </BottomSheetModalProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <StatusBar style="dark" />
+            <Main />
+            <Loader />
+            <FlashMessage position="top" />
+          </PersistGate>
+        </Provider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

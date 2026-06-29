@@ -2,18 +2,11 @@
 
 ![Expo](https://img.shields.io/badge/Expo-SDK%2052-000020?logo=expo&logoColor=white)
 ![React Native](https://img.shields.io/badge/React%20Native-0.76.9-61DAFB?logo=react&logoColor=black)
-![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux-4.x-764ABC?logo=redux&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20PostGIS-3FCF8E?logo=supabase&logoColor=white)
 
-> A production-grade, real-time ride-booking platform — React Native (Expo) on the front end and
-> Supabase (PostgreSQL + PostGIS + Realtime + Edge Functions) on the back end. Three roles
-> (passenger, driver, admin), live driver tracking, geospatial matching, a fare engine, payments architecture, and push notifications.
-
----
-
-## 📖 Overview
-
-Rideva is a portfolio-grade reference implementation demonstrating senior mobile + backend + real-time systems engineering. Architecture follows feature/layer separation and SOLID principles: side-effects live in `services/` and `hooks/`, screens stay presentational, and the database enforces invariants the client can't be trusted with (atomic ride assignment, fare integrity, one-active-ride).
+> A real-time ride-booking app (Uber / inDrive style) built with React Native (Expo) and Supabase.
+> inDrive-style fare bidding, live map, multiple vehicle types, and full passenger / driver / admin experiences.
 
 ---
 
@@ -21,14 +14,12 @@ Rideva is a portfolio-grade reference implementation demonstrating senior mobile
 
 | Area | Highlights |
 |------|-----------|
-| **Auth** | Email/password, Google OAuth, Apple Sign In, password reset, secure session persistence, RBAC by role |
-| **Passenger** | Map-first booking, per-class fare estimate, live driver tracking, ride history, ratings, saved places |
-| **Driver** | Online/offline toggle, real-time ride offers, accept/reject, trip state machine, earnings dashboard |
-| **Matching** | PostGIS KNN nearest-driver search, sequential offers with TTL, auto-reassign, radius-expanding fallback |
-| **Real-time** | Supabase Realtime for ride state + throttled driver-location stream |
-| **Payments** | Cash today; Stripe-ready schema (payment intents) + itemised fare breakdown & surge |
-| **Notifications** | Expo push + in-app feed, delivered from edge functions on every lifecycle event |
-| **Admin** | RLS-elevated metrics; architecture for a full web dashboard |
+| **Auth** | Email/password sign up & sign in, password reset, role-based access (passenger / driver / admin) |
+| **Bidding** | Passenger names their fare → nearby drivers accept or counter-offer → passenger picks a driver |
+| **Passenger** | Map-first booking, nearby drivers by vehicle type, live tracking, ride history, ratings, saved places, profile + photo |
+| **Driver** | Online/offline, nearby request feed, accept/counter, trip state machine, earnings, location broadcast |
+| **Maps** | Free OpenStreetMap (Leaflet in a WebView) + Nominatim geocoding — no Google Maps API / billing |
+| **Admin** | Live platform metrics |
 
 ---
 
@@ -37,14 +28,13 @@ Rideva is a portfolio-grade reference implementation demonstrating senior mobile
 | Category | Technology |
 |---|---|
 | Framework | React Native 0.76.9 + Expo SDK 52 |
-| Language | TypeScript 5.x (strict) |
-| Navigation | React Navigation 7 |
-| State | Zustand + TanStack Query v5 |
-| Forms | React Hook Form + Zod |
-| Styling | NativeWind v4 |
-| Animations | Reanimated 3 + Gesture Handler |
-| Maps / Location | react-native-maps, expo-location |
-| Backend | Supabase — PostgreSQL 15 + PostGIS, RLS, Realtime, Storage, Deno Edge Functions |
+| Language | JavaScript (files use `.tsx`/`.ts`, no TypeScript types) |
+| State | Redux + Redux Thunk + Redux Persist + Immutable.js |
+| Navigation | React Navigation (stacks + bottom tabs) |
+| Forms | Formik + Yup |
+| Styling | React Native `StyleSheet` + central `colors` + responsive `wp`/`hp` |
+| Maps / Location | OpenStreetMap + Leaflet (WebView), Nominatim, expo-location |
+| Backend | Supabase — PostgreSQL 15 + PostGIS, RLS, Realtime, Storage, Edge Functions |
 
 ---
 
@@ -52,106 +42,85 @@ Rideva is a portfolio-grade reference implementation demonstrating senior mobile
 
 ```
 Rideva/
-├── App.tsx                  # Provider shell
-├── index.ts                 # Entry (gesture handler + global.css)
-├── app.json                 # Expo config (permissions, plugins, maps keys)
-├── supabase/
-│   ├── config.toml          # Local stack config
-│   ├── seed.sql             # Demo accounts + online drivers
-│   ├── migrations/          # 0001 schema · 0002 functions/triggers · 0003 RLS
-│   └── functions/           # dispatch-ride/, send-push/
+├── App.tsx                     # Provider + PersistGate + Main
+├── index.ts                    # Entry
+├── babel.config.js             # Module-resolver aliases
+├── supabase/                   # Migrations, edge functions, seed (backend)
 └── src/
-    ├── components/          # ui/, map/, ride/
-    ├── config/              # validated runtime env
-    ├── constants/           # theme tokens, tunables, copy
-    ├── hooks/               # useAuth, useActiveRide, useDriverTracking…
-    ├── lib/                 # React Query client + key factory
-    ├── navigation/          # RBAC root navigator + per-role stacks
-    ├── screens/             # auth/ passenger/ driver/ shared/ admin/
-    ├── services/            # supabase, auth, rides, location, notifications
-    ├── store/               # Zustand (auth, booking)
-    ├── types/               # domain models
-    └── utils/               # geo (PostGIS/GeoJSON, polyline), format, validation
+    ├── colors.ts               # Color palette
+    ├── fonts.ts                # Font weights
+    ├── config/constant.ts      # Env keys, vehicle classes, status copy
+    ├── library/
+    │   ├── supabase.ts          # Supabase client (AsyncStorage)
+    │   └── location.js          # Geocoding, geometry, location watch
+    ├── utils/utilities.ts       # wp, hp, currency, formatters
+    ├── components/
+    │   ├── common/              # Button, TextField, Header, Loader, EmptyState, NameAvatar, StatusBadge
+    │   └── map/RideMap/         # OpenStreetMap WebView
+    ├── store/                   # Redux: index, reducers + domain folders
+    │   ├── Auth/                #   reducers.ts · actions.ts · api.js
+    │   ├── Common/              #   booking pickup/dropoff, location
+    │   ├── Loader/              #   global HUD
+    │   ├── Ride/                #   booking, bids, tracking
+    │   └── Driver/              #   online status, requests
+    ├── stacks/                  # Navigators: index (Main), Auth/Passenger/Driver/Admin
+    └── routes/                  # Screens (folder + index.tsx)
+        ├── Auth/                #   Login · SignUp · ForgotPassword
+        ├── Passenger/           #   Home · LocationPicker · RideTracking · RideSummary · Activity · SavedLocations
+        ├── Driver/              #   Dashboard · ActiveTrip · Earnings
+        ├── Shared/              #   Profile · EditProfile · Rate
+        └── Admin/               #   Dashboard
 ```
+
+### Path aliases
+`@src` `@store` `@library` `@config` `@utils` `@components` `@routes` `@stacks` `@colors` `@fonts` `@assets` (configured in `babel.config.js` + `tsconfig.json`).
+
+### Conventions
+- **Redux per domain**: each `store/<Domain>/` has an Immutable `reducers.ts`, thunk `actions.ts`, and a `api.js` for Supabase calls. Screens connect with `connect(mapState, actions)` and read state via `.get()`.
+- **Screens & components** are folders containing `index.tsx`; styles live in a `StyleSheet.create` at the bottom of each file using `colors` + `wp`/`hp`.
+- **Plain JavaScript** inside `.tsx`/`.ts` files (no type annotations), no comments.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js 20+
-- The [Supabase CLI](https://supabase.com/docs/guides/cli)
-- Xcode / Android Studio, or the Expo Go app
-
 ### 1. Install
 ```bash
 cd Rideva
-npm install
-cp .env.example .env        # fill in values (see below)
+npm install --legacy-peer-deps
+cp .env.example .env        # add your Supabase URL + anon key
 ```
 
-### 2. Boot the backend (local)
+### 2. Backend (Supabase)
+Run the SQL migrations in `supabase/migrations/` (in order) via the Supabase SQL Editor, then optionally `supabase/seed.sql` for demo data.
+
+`.env`:
+```
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### 3. Run
 ```bash
-supabase start              # Postgres + Auth + Realtime + Storage + Edge runtime
-supabase db reset           # applies migrations 0001→0003 and seed.sql
-supabase functions serve    # (optional) run edge functions locally
-```
-`supabase start` prints your local **API URL** and **anon key** — put them in `.env`.
-
-### 3. Run the app
-```bash
-npx expo start              # or: npm run ios / npm run android
+npx expo start -c           # Expo Go
+# or a dev build:
+npx expo run:ios            # / npx expo run:android
 ```
 
-### Demo accounts (after `db reset`)
+### Demo accounts (after running `seed.sql`)
 | Role | Email | Password |
 |------|-------|----------|
 | Passenger | `passenger@rideva.dev` | `Password123!` |
 | Driver | `driver1@rideva.dev` | `Password123!` |
 | Admin | `admin@rideva.dev` | `Password123!` |
 
-Two drivers are seeded **online** in downtown SF so booking returns a match immediately.
-
 ---
 
-## ⚙️ Environment Variables
-
-Mobile reads `EXPO_PUBLIC_*` (inlined at build) with an `app.json → extra` fallback. Edge functions read `SUPABASE_*` and provider secrets.
-
-| Key | Used by | Purpose |
-|-----|---------|---------|
-| `EXPO_PUBLIC_SUPABASE_URL` / `_ANON_KEY` | app | Supabase client |
-| `EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID` | app | Google sign-in |
-| `GOOGLE_MAPS_IOS_KEY` / `_ANDROID_KEY` | app build | Maps SDK |
-| `SUPABASE_SERVICE_ROLE_KEY` | edge fns | Privileged dispatch + push |
-| `STRIPE_SECRET_KEY` / `EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY` | payments | Card flow (when enabled) |
-
----
-
-## 📦 Deployment
-
-```bash
-npm install -g eas-cli
-eas login
-eas build --platform ios       # or: --platform android
-```
-
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the full app (EAS) + backend (Supabase) ship guide, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for system design.
-
----
-
-## 🧪 Scripts
-
-```bash
-npm run typecheck   # tsc --noEmit
-npm run lint        # eslint
-npm test            # jest
-npm run db:reset    # re-apply migrations + seed
-npm run functions:deploy
-```
-
----
+## 🔁 How bidding works
+1. Passenger sets pickup + destination, picks a vehicle type, and names a fare.
+2. The request appears in nearby drivers' feeds; each can **Accept** the offer or **Counter** with their own price.
+3. The passenger sees the driver offers (name, rating, vehicle, price, ETA) and picks one.
+4. The trip runs through the state machine: accepted → arrived → in progress → completed; the driver's earnings and both ratings are recorded.
 
 ## 📄 License
-
 MIT — for portfolio/demo use.

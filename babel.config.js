@@ -1,23 +1,28 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: [
-      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
-      "nativewind/babel",
-    ],
+    presets: ['babel-preset-expo'],
     plugins: [
-      // Path alias resolution for the "@/..." imports.
       [
-        "module-resolver",
+        require.resolve('babel-plugin-module-resolver'),
         {
-          root: ["./"],
-          alias: { "@": "./src" },
-          extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
+          root: ['./src'],
+          alias: {
+            '@src': './src',
+            '@store': './src/store',
+            '@library': './src/library',
+            '@config': './src/config',
+            '@utils': './src/utils',
+            '@components': './src/components',
+            '@routes': './src/routes',
+            '@stacks': './src/stacks',
+            '@assets': './assets',
+            '@colors': './src/colors',
+            '@fonts': './src/fonts',
+          },
         },
       ],
-      // NOTE: the react-native-reanimated/plugin is added automatically by the
-      // "nativewind/babel" preset (via react-native-css-interop), so we do NOT
-      // list it here — adding it twice triggers a "duplicate plugin" error.
+      'react-native-reanimated/plugin',
     ],
   };
 };

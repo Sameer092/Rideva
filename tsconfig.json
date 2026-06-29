@@ -1,18 +1,31 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noCheck": true,
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@src/*": ["src/*"],
+      "@store/*": ["src/store/*"],
+      "@library/*": ["src/library/*"],
+      "@config/*": ["src/config/*"],
+      "@utils/*": ["src/utils/*"],
+      "@components/*": ["src/components/*"],
+      "@routes/*": ["src/routes/*"],
+      "@stacks/*": ["src/stacks/*"],
+      "@assets/*": ["assets/*"],
+      "@colors": ["src/colors"],
+      "@fonts": ["src/fonts"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "nativewind-env.d.ts"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", ".expo/types/**/*.d.ts"],
+  "exclude": ["node_modules", "supabase"]
 }

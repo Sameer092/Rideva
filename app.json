@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "rideva",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
@@ -19,7 +19,6 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.rideva.app",
-      "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Rideva uses your location to find nearby drivers and track your ride.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Drivers share live location during active trips so passengers can track arrival.",
@@ -27,9 +26,6 @@
           "location",
           "remote-notification"
         ]
-      },
-      "config": {
-        "googleMapsApiKey": "GOOGLE_MAPS_IOS_KEY"
       }
     },
     "android": {
@@ -41,18 +37,10 @@
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
         "FOREGROUND_SERVICE"
-      ],
-      "config": {
-        "googleMaps": {
-          "apiKey": "GOOGLE_MAPS_ANDROID_KEY"
-        }
-      }
+      ]
     },
     "plugins": [
-      "expo-secure-store",
-      "expo-apple-authentication",
       [
         "expo-location",
         {
@@ -63,7 +51,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#5B5BD6"
+          "color": "#6D5EF6"
         }
       ],
       "expo-asset",
@@ -77,8 +65,7 @@
     ],
     "extra": {
       "supabaseUrl": "https://YOUR_PROJECT.supabase.co",
-      "supabaseAnonKey": "YOUR_ANON_KEY",
-      "googleOauthClientId": "YOUR_GOOGLE_WEB_CLIENT_ID"
+      "supabaseAnonKey": "YOUR_ANON_KEY"
     }
   }
 }
