@@ -9,7 +9,7 @@ function EmptyState({ icon = 'file-tray-outline', title, subtitle }) {
   return (
     <View style={styles.wrap}>
       <View style={styles.circle}>
-        <Icon name={icon} size={wp(10)} color={colors.txtTertiary} />
+        <Icon name={icon} size={wp(9)} color={colors.primary} />
       </View>
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     width: wp(22),
     height: wp(22),
     borderRadius: wp(11),
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: hp(2)

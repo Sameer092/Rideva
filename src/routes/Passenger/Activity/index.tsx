@@ -54,7 +54,7 @@ export default connect(connectState)(Activity);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   flex: {
     flex: 1

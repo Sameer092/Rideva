@@ -56,7 +56,7 @@ const RideMap = forwardRef(function RideMap({ center, pickup, dropoff, driver, v
       ref={webRef}
       originWhitelist={['*']}
       source={{ html }}
-      style={{ flex: 1, backgroundColor: '#e8eaed' }}
+      style={{ flex: 1, backgroundColor: '#0B0F14' }}
       onMessage={onMessage}
       scrollEnabled={false}
       javaScriptEnabled
@@ -73,11 +73,11 @@ function buildHtml(lat, lng) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>html,body,#map{height:100%;margin:0;padding:0;background:#e8eaed}.leaflet-control-attribution{font-size:8px}</style>
+<style>html,body,#map{height:100%;margin:0;padding:0;background:#0B0F14}.leaflet-control-attribution{font-size:8px;background:rgba(0,0,0,.4);color:#8A95A3}.leaflet-control-attribution a{color:#8A95A3}</style>
 </head><body><div id="map"></div>
 <script>
 var map = L.map('map',{zoomControl:false}).setView([${lat},${lng}],15);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap, © CARTO'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap, © CARTO'}).addTo(map);
 var markerLayer = L.layerGroup().addTo(map);
 function post(o){ if(window.ReactNativeWebView) window.ReactNativeWebView.postMessage(JSON.stringify(o)); }
 map.on('moveend', function(){ var c=map.getCenter(); post({type:'region',lat:c.lat,lng:c.lng}); });
@@ -88,7 +88,7 @@ window.rnSetMarkers=function(ms){
   (ms||[]).forEach(function(m){
     var icon;
     if(m.emoji){ icon=L.divIcon({className:'',iconSize:[34,34],iconAnchor:[17,17],html:'<div style="width:30px;height:30px;border-radius:50%;background:#fff;border:1px solid rgba(0,0,0,.15);box-shadow:0 1px 4px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:18px">'+m.emoji+'</div>'}); }
-    else { var color=m.type==='dropoff'?'#0B0D12':'#6D5EF6'; var radius=m.type==='dropoff'?'4px':'50%'; icon=L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],html:'<div style="width:16px;height:16px;border-radius:'+radius+';background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4)"></div>'}); }
+    else { var color=m.type==='dropoff'?'#FFFFFF':'#C6F432'; var radius=m.type==='dropoff'?'4px':'50%'; icon=L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],html:'<div style="width:16px;height:16px;border-radius:'+radius+';background:'+color+';border:2px solid #0B0F14;box-shadow:0 0 0 2px '+color+'55"></div>'}); }
     L.marker([m.lat,m.lng],{icon:icon}).addTo(markerLayer);
   });
 };

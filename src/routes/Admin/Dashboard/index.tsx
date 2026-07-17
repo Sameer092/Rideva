@@ -45,7 +45,7 @@ function Dashboard({ signOut }) {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.heading}>Admin · Live</Text>
-        <LinearGradient colors={[colors.primaryLight, colors.primaryDark]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+        <LinearGradient colors={[colors.primaryLight, colors.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
           <Text style={styles.heroLabel}>Active rides right now</Text>
           <Text style={styles.heroValue}>{m.active}</Text>
           <Text style={styles.heroSub}>{m.drivers} drivers online</Text>
@@ -91,17 +91,17 @@ const styles = StyleSheet.create({
   heroLabel: {
     fontWeight: Regular,
     fontSize: wp(3.4),
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(11,15,20,0.65)'
   },
   heroValue: {
     fontWeight: Bold,
     fontSize: wp(10),
-    color: colors.white
+    color: colors.ink
   },
   heroSub: {
     fontWeight: Regular,
     fontSize: wp(3.4),
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(11,15,20,0.65)'
   },
   tiles: {
     flexDirection: 'row',
@@ -110,7 +110,9 @@ const styles = StyleSheet.create({
   },
   tile: {
     width: '47%',
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(4),
     padding: wp(4)
   },

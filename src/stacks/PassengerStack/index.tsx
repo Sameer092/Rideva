@@ -29,6 +29,7 @@ function PassengerTabs() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.txtTertiary,
         tabBarStyle: {
+          backgroundColor: colors.card,
           borderTopColor: colors.border,
           height: wp(15) + insets.bottom,
           paddingBottom: insets.bottom + wp(1.5),

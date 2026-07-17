@@ -19,7 +19,7 @@ export default function App() {
       <SafeAreaProvider>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             <Main />
             <Loader />
             <FlashMessage position="top" />

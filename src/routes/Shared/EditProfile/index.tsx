@@ -115,7 +115,7 @@ export default enhancer(EditProfile);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   scroll: {
     padding: wp(6)
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   changeText: {
     fontWeight: Bold,
     fontSize: wp(3.4),
-    color: colors.primaryDark
+    color: colors.primary
   },
   readLabel: {
     fontWeight: Medium,
@@ -143,7 +143,9 @@ const styles = StyleSheet.create({
     marginBottom: hp(0.8)
   },
   readonly: {
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.elevated,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(3),
     paddingHorizontal: wp(3.5),
     height: hp(6.4),
@@ -168,6 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: wp(8),
     borderWidth: 1.5,
     borderColor: colors.border,
+    backgroundColor: colors.card,
     paddingHorizontal: wp(3),
     paddingVertical: hp(1)
   },

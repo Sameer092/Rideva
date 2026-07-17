@@ -7,7 +7,7 @@ import Icon from '@expo/vector-icons/Ionicons';
 import MCIcon from '@expo/vector-icons/MaterialCommunityIcons';
 import colors from '@colors';
 import { Bold, Regular, SemiBold } from '@fonts';
-import { wp, hp, currency, getInitials } from '@utils/utilities';
+import { wp, hp, currency } from '@utils/utilities';
 import { Button, NameAvatar } from '@components/common';
 import RideMap from '@components/map/RideMap';
 import { VEHICLE_CLASSES } from '@config/constant';
@@ -134,11 +134,12 @@ function Home({ navigation, user, pickup, dropoff, nearby, activeRide, setPickup
           </View>
         </View>
         <TouchableOpacity style={styles.starBtn} onPress={() => navigation.navigate('SavedLocations')}>
-          <Icon name="star" size={wp(5)} color={colors.golden} />
+          <Icon name="bookmark" size={wp(5)} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
       <View style={styles.panel}>
+        <View style={styles.grabber} />
         <Text style={styles.panelTitle}>{dropoff ? 'Confirm your ride' : 'Where to?'}</Text>
 
         <View style={styles.stepper}>
@@ -163,7 +164,7 @@ function Home({ navigation, user, pickup, dropoff, nearby, activeRide, setPickup
               return (
                 <TouchableOpacity key={vc.key} style={[styles.vehicle, active && styles.vehicleActive]} onPress={() => setVehicleClass(vc.key)}>
                   <View style={[styles.vehicleIcon, active && styles.vehicleIconActive]}>
-                    <MCIcon name={vc.icon} size={wp(6)} color={active ? colors.white : colors.txtDark} />
+                    <MCIcon name={vc.icon} size={wp(6)} color={active ? colors.ink : colors.txtDark} />
                   </View>
                   <View style={styles.flex}>
                     <Text style={styles.vehicleLabel}>{vc.label}</Text>
@@ -193,11 +194,11 @@ function Home({ navigation, user, pickup, dropoff, nearby, activeRide, setPickup
         ) : (
           <View style={styles.chips}>
             <TouchableOpacity style={styles.chip} onPress={() => navigation.navigate('LocationPicker', { field: 'dropoff' })}>
-              <Icon name="location-outline" size={wp(4)} color={colors.txtSecondary} />
+              <Icon name="location-outline" size={wp(4)} color={colors.primary} />
               <Text style={styles.chipText}>Choose on map</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.chip} onPress={() => navigation.navigate('SavedLocations')}>
-              <Icon name="star-outline" size={wp(4)} color={colors.txtSecondary} />
+              <Icon name="bookmark-outline" size={wp(4)} color={colors.primary} />
               <Text style={styles.chipText}>Saved</Text>
             </TouchableOpacity>
           </View>
@@ -211,7 +212,8 @@ export default enhancer(Home);
 
 const styles = StyleSheet.create({
   flex: {
-    flex: 1
+    flex: 1,
+    backgroundColor: colors.background
   },
   topBar: {
     position: 'absolute',
@@ -226,8 +228,10 @@ const styles = StyleSheet.create({
   welcome: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
     borderRadius: wp(10),
+    borderWidth: 1,
+    borderColor: colors.border,
     paddingHorizontal: wp(2.5),
     paddingVertical: wp(1.5),
     gap: wp(2)
@@ -242,14 +246,16 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: Bold,
-    fontSize: wp(3.4),
+    fontSize: wp(3.6),
     color: colors.txtDark
   },
   starBtn: {
     width: wp(11),
     height: wp(11),
     borderRadius: wp(6),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -258,44 +264,54 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: wp(6),
-    borderTopRightRadius: wp(6),
-    padding: wp(5),
-    maxHeight: hp(64)
+    backgroundColor: colors.card,
+    borderTopLeftRadius: wp(7),
+    borderTopRightRadius: wp(7),
+    paddingHorizontal: wp(5),
+    paddingBottom: hp(2),
+    paddingTop: hp(1),
+    maxHeight: hp(66)
+  },
+  grabber: {
+    alignSelf: 'center',
+    width: wp(11),
+    height: wp(1.2),
+    borderRadius: wp(1),
+    backgroundColor: colors.border,
+    marginBottom: hp(1.5)
   },
   panelTitle: {
     fontWeight: Bold,
-    fontSize: wp(5.4),
+    fontSize: wp(5.6),
     color: colors.txtDark,
     marginBottom: hp(1.5)
   },
   stepper: {
-    backgroundColor: colors.dark100,
-    borderRadius: wp(3.5),
+    backgroundColor: colors.elevated,
+    borderRadius: wp(4),
     padding: wp(1)
   },
   locRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(3),
-    paddingHorizontal: wp(3),
-    paddingVertical: hp(1.6)
+    paddingHorizontal: wp(3.5),
+    paddingVertical: hp(1.7)
   },
   dot: {
-    width: wp(2.5),
-    height: wp(2.5),
+    width: wp(2.6),
+    height: wp(2.6),
     borderRadius: wp(2),
     backgroundColor: colors.primary
   },
   square: {
-    width: wp(2.5),
-    height: wp(2.5),
+    width: wp(2.6),
+    height: wp(2.6),
     borderRadius: 2,
-    backgroundColor: colors.txtDark
+    backgroundColor: colors.white
   },
   line: {
-    marginLeft: wp(5),
+    marginLeft: wp(5.2),
     width: 1,
     height: hp(1.6),
     backgroundColor: colors.border
@@ -313,10 +329,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(3),
-    borderRadius: wp(3.5),
+    borderRadius: wp(4),
     borderWidth: 1.5,
     borderColor: colors.transparent,
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.elevated,
     padding: wp(2.5),
     marginBottom: hp(1)
   },
@@ -325,10 +341,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft
   },
   vehicleIcon: {
-    width: wp(11),
-    height: wp(11),
-    borderRadius: wp(3),
-    backgroundColor: colors.white,
+    width: wp(12),
+    height: wp(12),
+    borderRadius: wp(3.5),
+    backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -351,8 +367,8 @@ const styles = StyleSheet.create({
     color: colors.txtDark
   },
   offer: {
-    backgroundColor: colors.dark100,
-    borderRadius: wp(3.5),
+    backgroundColor: colors.elevated,
+    borderRadius: wp(4),
     padding: wp(4),
     marginTop: hp(1)
   },
@@ -369,16 +385,18 @@ const styles = StyleSheet.create({
     marginVertical: hp(0.5)
   },
   offerBtn: {
-    width: wp(11),
-    height: wp(11),
+    width: wp(12),
+    height: wp(12),
     borderRadius: wp(6),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center'
   },
   offerValue: {
     fontWeight: Bold,
-    fontSize: wp(7),
+    fontSize: wp(7.5),
     color: colors.txtDark
   },
   offerHint: {
@@ -400,7 +418,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(2),
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.elevated,
     borderRadius: wp(8),
     paddingHorizontal: wp(4),
     height: hp(5.5)

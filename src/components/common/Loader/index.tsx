@@ -29,10 +29,12 @@ const styles = StyleSheet.create({
     zIndex: 999
   },
   box: {
-    width: 80,
-    height: 80,
-    borderRadius: 16,
-    backgroundColor: colors.white,
+    width: 86,
+    height: 86,
+    borderRadius: 22,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center'
   }

@@ -6,12 +6,12 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "rideva",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0B0B0F"
+      "backgroundColor": "#0B0F14"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -32,7 +32,7 @@
       "package": "com.rideva.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#6D5EF6"
+        "backgroundColor": "#0B0F14"
       },
       "permissions": [
         "ACCESS_COARSE_LOCATION",
@@ -51,7 +51,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#6D5EF6"
+          "color": "#C6F432"
         }
       ],
       "expo-asset",

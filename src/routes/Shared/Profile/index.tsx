@@ -35,7 +35,7 @@ function Profile({ navigation, user, signOut }) {
   return (
     <View style={styles.flex}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={[colors.primaryLight, colors.primaryDark]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <LinearGradient colors={[colors.primaryLight, colors.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
           <SafeAreaView edges={['top']}>
             <TouchableOpacity style={styles.header} onPress={() => navigation.navigate('EditProfile')}>
               <View style={styles.avatarRing}>
@@ -82,24 +82,24 @@ const styles = StyleSheet.create({
   avatarRing: {
     borderRadius: wp(20),
     borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: 'rgba(11,15,20,0.25)',
     marginBottom: hp(1.5)
   },
   name: {
     fontWeight: Bold,
     fontSize: wp(6),
-    color: colors.white
+    color: colors.ink
   },
   email: {
     fontWeight: Regular,
     fontSize: wp(3.4),
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(11,15,20,0.65)'
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(2),
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(11,15,20,0.12)',
     borderRadius: wp(8),
     paddingHorizontal: wp(4),
     paddingVertical: hp(0.6),
@@ -108,11 +108,11 @@ const styles = StyleSheet.create({
   chipText: {
     fontWeight: Bold,
     fontSize: wp(3.4),
-    color: colors.white,
+    color: colors.ink,
     textTransform: 'capitalize'
   },
   chipDot: {
-    color: 'rgba(255,255,255,0.7)'
+    color: 'rgba(11,15,20,0.55)'
   },
   body: {
     marginTop: -hp(2.5),
@@ -122,7 +122,9 @@ const styles = StyleSheet.create({
     padding: wp(5)
   },
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(4),
     paddingVertical: hp(0.5),
     marginBottom: hp(2)

@@ -34,7 +34,7 @@ function Earnings({ user }) {
         ListHeaderComponent={
           <View>
             <Text style={styles.heading}>Earnings</Text>
-            <LinearGradient colors={[colors.primaryLight, colors.primaryDark]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balance}>
+            <LinearGradient colors={[colors.primaryLight, colors.primary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.balance}>
               <Text style={styles.balanceLabel}>Total net payout</Text>
               <Text style={styles.balanceValue}>{currency(net)}</Text>
               <View style={styles.stats}>
@@ -77,7 +77,7 @@ export default connect(connectState)(Earnings);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   flex: {
     flex: 1
@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
   balanceLabel: {
     fontWeight: Regular,
     fontSize: wp(3.4),
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(11,15,20,0.65)'
   },
   balanceValue: {
     fontWeight: Bold,
     fontSize: wp(10),
-    color: colors.white
+    color: colors.ink
   },
   stats: {
     flexDirection: 'row',
@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontWeight: Bold,
     fontSize: wp(4.4),
-    color: colors.white
+    color: colors.ink
   },
   statLabel: {
     fontWeight: Regular,
     fontSize: wp(2.9),
-    color: 'rgba(255,255,255,0.8)'
+    color: 'rgba(11,15,20,0.65)'
   },
   recent: {
     fontWeight: Bold,
@@ -136,7 +136,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(3),
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(4),
     padding: wp(3.5),
     marginBottom: hp(1)

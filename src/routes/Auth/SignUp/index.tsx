@@ -110,7 +110,7 @@ export default enhancer(SignUp);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   scroll: {
     padding: wp(6),
@@ -123,9 +123,10 @@ const styles = StyleSheet.create({
   },
   role: {
     flex: 1,
-    borderRadius: wp(4),
+    borderRadius: wp(4.5),
     borderWidth: 1.5,
     borderColor: colors.border,
+    backgroundColor: colors.card,
     padding: wp(4)
   },
   roleActive: {
@@ -156,6 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: wp(8),
     borderWidth: 1.5,
     borderColor: colors.border,
+    backgroundColor: colors.card,
     paddingHorizontal: wp(3),
     paddingVertical: hp(1)
   },
@@ -184,6 +186,6 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: Bold,
     fontSize: wp(3.6),
-    color: colors.primaryDark
+    color: colors.primary
   }
 });

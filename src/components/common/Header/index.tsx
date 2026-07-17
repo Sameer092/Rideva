@@ -10,7 +10,7 @@ function Header({ title, onBack, right }) {
     <View style={styles.row}>
       {onBack ? (
         <TouchableOpacity onPress={onBack} style={styles.iconBtn}>
-          <Icon name="chevron-back" size={wp(6)} color={colors.txtDark} />
+          <Icon name="chevron-back" size={wp(5.5)} color={colors.txtDark} />
         </TouchableOpacity>
       ) : (
         <View style={styles.iconBtn} />
@@ -34,8 +34,10 @@ const styles = StyleSheet.create({
     height: hp(7)
   },
   iconBtn: {
-    width: wp(10),
-    height: wp(10),
+    width: wp(11),
+    height: wp(11),
+    borderRadius: wp(6),
+    backgroundColor: colors.card,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -43,7 +45,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     fontWeight: Bold,
-    fontSize: wp(4.6),
+    fontSize: wp(4.8),
     color: colors.txtDark
   }
 });

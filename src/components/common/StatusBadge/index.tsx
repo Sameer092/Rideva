@@ -5,10 +5,10 @@ import { SemiBold } from '@fonts';
 import { wp, hp } from '@utils/utilities';
 
 const TONES = {
-  neutral: { bg: colors.dark100, text: colors.txtSecondary },
+  neutral: { bg: colors.elevated, text: colors.txtSecondary },
   success: { bg: colors.successSoft, text: colors.success },
   danger: { bg: colors.dangerSoft, text: colors.danger },
-  brand: { bg: colors.primarySoft, text: colors.primaryDark },
+  brand: { bg: colors.primarySoft, text: colors.primary },
 };
 
 function StatusBadge({ label, tone = 'neutral' }) {

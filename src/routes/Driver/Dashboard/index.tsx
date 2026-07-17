@@ -172,7 +172,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(5),
     margin: wp(4),
     padding: wp(4),
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   feed: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
     borderTopLeftRadius: wp(6),
     borderTopRightRadius: wp(6),
     padding: wp(4),
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
     color: colors.txtSecondary
   },
   req: {
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.elevated,
     borderRadius: wp(4),
     padding: wp(3.5),
     marginBottom: hp(1.2)
@@ -291,7 +293,7 @@ const styles = StyleSheet.create({
   acceptText: {
     fontWeight: Bold,
     fontSize: wp(3.6),
-    color: colors.white
+    color: colors.ink
   },
   counterRow: {
     flexDirection: 'row',
@@ -304,7 +306,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(1),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(3),
     paddingHorizontal: wp(3),
     height: hp(5.2)
@@ -331,6 +335,6 @@ const styles = StyleSheet.create({
   sendText: {
     fontWeight: Bold,
     fontSize: wp(3.6),
-    color: colors.white
+    color: colors.ink
   }
 });

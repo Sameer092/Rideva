@@ -195,7 +195,9 @@ const styles = StyleSheet.create({
     width: wp(11),
     height: wp(11),
     borderRadius: wp(6),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -204,7 +206,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(2),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(3),
     paddingHorizontal: wp(3.5),
     height: hp(6)
@@ -218,7 +222,9 @@ const styles = StyleSheet.create({
   results: {
     marginHorizontal: wp(4),
     marginTop: hp(1),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(3),
     maxHeight: hp(34)
   },
@@ -246,13 +252,15 @@ const styles = StyleSheet.create({
     width: wp(13),
     height: wp(13),
     borderRadius: wp(7),
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 4
   },
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
     borderTopLeftRadius: wp(6),
     borderTopRightRadius: wp(6),
     padding: wp(5)

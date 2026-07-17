@@ -6,7 +6,7 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import Icon from '@expo/vector-icons/Ionicons';
 import colors from '@colors';
-import { Bold, Regular } from '@fonts';
+import { Bold, Regular, SemiBold } from '@fonts';
 import { wp, hp } from '@utils/utilities';
 import { Button, TextField } from '@components/common';
 import * as AuthActions from '@store/Auth/actions';
@@ -36,9 +36,9 @@ function Login({ navigation, signIn, showHUD, hideHUD }) {
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
           <View style={styles.logo}>
-            <Icon name="location" size={wp(8)} color={colors.white} />
+            <Icon name="location" size={wp(8)} color={colors.ink} />
           </View>
-          <Text style={styles.brand}>Rideva</Text>
+          <Text style={styles.brand}>Welcome back</Text>
           <Text style={styles.subtitle}>Sign in to continue your journey</Text>
 
           <Formik initialValues={{ email: '', password: '' }} validationSchema={schema} onSubmit={submit}>
@@ -88,7 +88,7 @@ export default enhancer(Login);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   flex: {
     flex: 1
@@ -101,22 +101,22 @@ const styles = StyleSheet.create({
   logo: {
     width: wp(18),
     height: wp(18),
-    borderRadius: wp(5),
+    borderRadius: wp(6),
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    marginBottom: hp(1.5)
+    marginBottom: hp(2.5)
   },
   brand: {
     fontWeight: Bold,
-    fontSize: wp(7),
+    fontSize: wp(8),
     color: colors.txtDark,
     textAlign: 'center'
   },
   subtitle: {
     fontWeight: Regular,
-    fontSize: wp(3.6),
+    fontSize: wp(3.8),
     color: colors.txtSecondary,
     textAlign: 'center',
     marginBottom: hp(4)
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
     marginBottom: hp(2)
   },
   forgotText: {
-    fontWeight: Regular,
+    fontWeight: SemiBold,
     fontSize: wp(3.4),
-    color: colors.primaryDark
+    color: colors.primary
   },
   footer: {
     flexDirection: 'row',
@@ -146,6 +146,6 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: Bold,
     fontSize: wp(3.6),
-    color: colors.primaryDark
+    color: colors.primary
   }
 });

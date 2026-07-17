@@ -33,7 +33,10 @@ function RideTracking({ navigation, user, activeRide, bids, loadActiveRide, load
   useEffect(() => {
     if (!rideId) return;
     const tick = async () => {
-      if (user) await loadActiveRide(user.id);
+      try {
+        const fresh = await getRide(rideId);
+        if (fresh) setActiveRide(fresh);
+      } catch (e) {}
       if (matching) loadBids(rideId);
       else {
         const loc = await getDriverLocation(rideId);
@@ -191,7 +194,9 @@ const styles = StyleSheet.create({
     padding: wp(4)
   },
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(5),
     padding: wp(5),
     maxHeight: hp(64)
@@ -280,7 +285,7 @@ const styles = StyleSheet.create({
   acceptText: {
     fontWeight: Bold,
     fontSize: wp(3.2),
-    color: colors.white
+    color: colors.ink
   },
   cancelLink: {
     alignSelf: 'center',

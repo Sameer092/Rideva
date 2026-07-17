@@ -123,7 +123,9 @@ const styles = StyleSheet.create({
     padding: wp(4)
   },
   card: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(5),
     padding: wp(4),
     marginBottom: hp(1.5),

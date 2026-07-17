@@ -62,7 +62,7 @@ export default RideSummary;
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   scroll: {
     padding: wp(6)

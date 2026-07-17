@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: Bold,
-    color: colors.primaryDark
+    color: colors.primary
   }
 });

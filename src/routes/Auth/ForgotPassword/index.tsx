@@ -59,7 +59,7 @@ export default enhancer(ForgotPassword);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   body: {
     flex: 1,

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import colors from '@colors';
 import * as AuthActions from '@store/Auth/actions';
 import { onAuthStateChange } from '@store/Auth/api';
@@ -59,8 +59,20 @@ function Main({ user, ready, setUser, loadCurrentUser, getSession }) {
     return <PassengerStack />;
   };
 
-  return <NavigationContainer>{renderStack()}</NavigationContainer>;
+  return <NavigationContainer theme={navTheme}>{renderStack()}</NavigationContainer>;
 }
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.background,
+    card: colors.card,
+    text: colors.txtDark,
+    border: colors.border,
+    primary: colors.primary,
+  },
+};
 
 export default enhancer(Main);
 
@@ -69,6 +81,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   }
 });

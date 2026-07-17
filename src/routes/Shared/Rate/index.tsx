@@ -75,7 +75,7 @@ export default enhancer(Rate);
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: colors.white
+    backgroundColor: colors.background
   },
   body: {
     flex: 1,
@@ -120,7 +120,9 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: hp(12),
-    backgroundColor: colors.dark100,
+    backgroundColor: colors.elevated,
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: wp(3.5),
     padding: wp(4),
     fontWeight: Regular,
